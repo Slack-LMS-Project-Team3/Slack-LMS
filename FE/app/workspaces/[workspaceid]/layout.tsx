@@ -82,8 +82,10 @@ export default function WorkspaceLayout({
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={channelWidth} minSize={30} maxSize={90}>
-            {/* 채널 영역*/}
-            {channel}
+            <div className="flex-1 min-w-0 h-full flex flex-col overflow-x-auto break-all">
+              {/* 채널 영역*/}
+              {channel}
+            </div>
           </ResizablePanel>
           {/* 프로필이 열렸을 때만 렌더링 */}
           {isOpen && (

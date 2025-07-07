@@ -10,6 +10,8 @@ interface ChatProfileProps {
 }
 
 export function ChatProfile({ imgSrc, nickname, time, content, showProfile }: ChatProfileProps) {
+  const text = content.replace(/\n+$/, ""); // 마지막 줄의 개행 문자 제거
+
   return (
     <div className="flex px-[8px] py-[4.5px] hover:bg-[#F4F4F4] group">
       {/* showProfile이면, 프로필 사진 + 이름 + 채팅 보여줌. 아니면 채팅만 */}
@@ -43,7 +45,7 @@ export function ChatProfile({ imgSrc, nickname, time, content, showProfile }: Ch
             <span className="text-xs chat-time-stamp">{time}</span>
           </div>
         )}
-        <div className="text-m">{content}</div>
+        <p className="whitespace-pre-wrap break-words break-anywhere text-m">{text}</p>
       </div>
     </div>
   );
