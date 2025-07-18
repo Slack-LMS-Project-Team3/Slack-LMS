@@ -64,7 +64,7 @@ export function LearnerTrend() {
         <div className="grid flex-1 gap-1">
           <CardTitle className="text-lg">Monthly Trends of Learners</CardTitle>
           <CardDescription>
-            Showing total invited vs completed learners for the last 12 months
+            Showing total invited vs completed learners for the selected period
           </CardDescription>
         </div>
         {/* 기간 필터 */}

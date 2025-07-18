@@ -7,16 +7,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 // 더미 데이터
 const chartData = [
-  { user_id: "aaaaa", nickname: "이재웅", profileImage: "https://media.themoviedb.org/t/p/w235_and_h235_face/kZUO2s2ZsBRYZ8acu0wMzlGHpRS.jpg", message: 186, reaction: 80, date: "2025-07-01" },
-  { user_id: "baaaa", nickname: "안유진", profileImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJTo8iIFzFIFddj2NH-6RVX7icC3qstTXnOw&s", message: 305, reaction: 200, date: "2025-06-15" },
-  { user_id: "bbaaa", nickname: "신명훈", profileImage: "https://watching-img.pickle.plus/person/105ba016-a5bc-46f0-878a-53cbe797ba50-1737601216444.jpg?w=256&q=75&format=webp", message: 237, reaction: 120, date: "2025-05-20" },
-  { user_id: "bbbaa", nickname: "박은채", profileImage: "https://i.namu.wiki/i/WoqVHNro3L3azYGRDgGSUs0Urkf4zxa4bCAC2bZ6NzyPY0Z-Z6s1HJGt0MC13A2FPMQlmNoZIgGICdF9EdKGcA.webp", message: 73, reaction: 190, date: "2025-07-10" },
-  { user_id: "bbbba", nickname: "이찬석", profileImage: "https://i.playboard.app/p/AATXAJyeQzU8gwA0mHWkUhikyG3raEHC2gKomgGF01j9/default.jpg", message: 209, reaction: 130, date: "2024-10-05" },
-  { user_id: "caaaa", nickname: "김민정", profileImage: "", message: 250, reaction: 150, date: "2025-06-25" },
-  { user_id: "ccaaa", nickname: "정해인", profileImage: "", message: 150, reaction: 210, date: "2024-08-15" },
-  { user_id: "cccaa", nickname: "박보검", profileImage: "", message: 190, reaction: 90, date: "2025-07-05" },
-  { user_id: "cccca", nickname: "송강", profileImage: "", message: 290, reaction: 180, date: "2024-09-20" },
-  { user_id: "daaaa", nickname: "고윤정", profileImage: "", message: 310, reaction: 250, date: "2025-07-12" },
+  { user_id: "aaaaa", nickname: "임준혁", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08G0RSLZ63-e8fc3d520338-512", message: 23, reaction: 80, date: "2025-07-01" },
+  { user_id: "baaaa", nickname: "안유진", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08G0RLU339-78632c064950-512", message: 45, reaction: 45, date: "2025-06-15" },
+  { user_id: "bbaaa", nickname: "신명훈", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08GSH9GXLH-f58b4ad3af52-512", message: 12, reaction: 35, date: "2025-05-20" },
+  { user_id: "bbbaa", nickname: "박은채", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08GSGL5ZK3-0c7f0765f91c-512", message: 53, reaction: 73, date: "2025-07-10" },
+  { user_id: "bbbba", nickname: "이찬석", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08GJQ125LL-3323bcb28d3c-512", message: 19, reaction: 58, date: "2024-10-05" },
+  { user_id: "caaaa", nickname: "김윤석", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08G0QQBJGP-01e343a685ab-512", message: 30, reaction: 60, date: "2025-06-25" },
+  { user_id: "ccaaa", nickname: "조현호", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08G8LYTZEJ-5763f312baed-512", message: 27, reaction: 38, date: "2024-08-15" },
+  { user_id: "cccaa", nickname: "오수빈", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08GD3U1EER-737ade56d6d8-512", message: 27, reaction: 26, date: "2025-07-05" },
+  { user_id: "cccca", nickname: "최효식", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08GGJAQK99-29a368f10ce2-512", message: 52, reaction: 62, date: "2024-09-20" },
+  { user_id: "daaaa", nickname: "고재웅", profileImage: "https://ca.slack-edge.com/T01GNAFL1MX-U08G8LJ0Z2A-78a6c503d0d4-512", message: 44, reaction: 36, date: "2025-07-12" },
 ];
 
 // 차트 색상 설정
@@ -75,8 +75,7 @@ export function MostActiveByMessage() {
       {/* 차트 제목 */}
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5">
         <div className="grid flex-1 gap-1">
-          <CardTitle className="text-lg">Most Active by Message</CardTitle>
-          <CardDescription>Top 10 learners by message count</CardDescription>
+          <CardTitle className="text-lg">Top 10 Active Messengers</CardTitle>          
         </div>
         {/* 기간 필터 */}
         <Select value={timeRange} onValueChange={setTimeRange}>
@@ -109,7 +108,7 @@ export function MostActiveByMessage() {
       <CardFooter className="flex-col pl-0 ml-3 items-start gap-2 text-sm">
         <div className="flex gap-1 text-muted-foreground leading-none">
           <ChartNoAxesColumn className="h-4 w-4" />
-          Showing top 10 learners by message count
+          Showing top 10 Messengers for the selected period
         </div>
       </CardFooter>
     </Card>

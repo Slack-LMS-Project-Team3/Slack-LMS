@@ -22,7 +22,7 @@ export default function LearnerCounts() {
             </CardHeader>
             {/* 차트 내용 */}
             <CardContent>                
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-3 gap-6">
                     {/* 탭에 초대된 총 학습자 수 */}
                     <div className="flex flex-col items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800 gap-3">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
