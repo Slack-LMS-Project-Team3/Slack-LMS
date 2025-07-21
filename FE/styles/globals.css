@@ -371,3 +371,354 @@
 .notion-header {
   display: none !important;
 }
+
+/* UI 폴리싱 */
+
+/* 사이드바 배경색 */
+.p1-sidebar-bg {
+  color: #0b4c8c;
+}
+/* 사이드바 탭 */
+.p1-sidebar-tab {
+  color: #0b4c8c;
+}
+/* 사이드바 탭 호버 */
+.p1-sidebar-tab:hover {
+  color: #0b4c8c;
+}
+/* 사이드바 탭 선택 */
+.p1-sidebar-tab-selected {
+  color: #0b4c8c;
+}
+/* 사이드바 텍스트 섹션 */
+.p1-sidebar-text-section {
+  color: #0b4c8c;
+}
+/* 사이드바 텍스트 탭 */
+.p1-sidebar-text-tab {
+  color: #0b4c8c;
+}
+/* 사이드바 텍스트 탭 호버 */
+.p1-sidebar-text-tab:hover {
+  color: #0b4c8c;
+}
+/* 사이드바 텍스트 탭 선택 */
+.p1-sidebar-text-tab-selected {
+  color: #0b4c8c;
+}
+/* 사이드바 텍스트 탭 알림*/
+.p1-sidebar-text-tab-notification {
+  color: #0b4c8c;
+}
+/* 사이드바 프로필 배경*/
+.p1-sidebar-profile-bg {
+  color: #0b4c8c;
+}
+/* 사이드바 프로필 테두리*/
+.p1-sidebar-profile-border {
+  color: #0b4c8c;
+}
+/* 사이드바 프로필 텍스트 */
+.p1-sidebar-profile-text {
+  color: #0b4c8c;
+}
+
+/* 상단바 배경 */
+.p1-bar-bg {
+  color: #0b4c8c;
+}
+/* 상단바 테두리 */
+.p1-bar-border {
+  color: #0b4c8c;
+}
+/* 상단바 제목 */
+.p1-bar-title {
+  color: #0b4c8c;
+}
+/* 상단바 검색창 배경*/
+.p1-bar-search-bg {
+  color: #0b4c8c;
+}
+/* 상단바 검색창 라인 */
+.p1-bar-search-ling {
+  color: #0b4c8c;
+}
+
+/* 탭 헤더 배경 */
+.p1-tabHeader-bg {
+  color: #0b4c8c;
+}
+/* 탭 헤더 호버 */
+.p1-tabHeader-hover:hover {
+  color: #0b4c8c;
+}
+/* 탭 헤더 제목 */
+.p1-tabHeader-text-title {
+  color: #0b4c8c;
+}
+/* 탭 헤더 플로트 */
+.p1-tabHeader-text-float {
+  color: #0b4c8c;
+}
+/* 탭 헤더 탭 배경 */
+.p1-tabHeader-tab-bg {
+  color: #0b4c8c;
+}
+/* 탭 헤더 탭 호버 */
+.p1-tabHeader-tab-hover:hover {
+  color: #0b4c8c;
+}
+/* 탭 헤더 탭 선택 */
+.p1-tabHeader-tab-selected {
+  color: #0b4c8c;
+}
+/* 탭 헤더 탭 텍스트 */
+.p1-tabHeader-tab-text {
+  color: #0b4c8c;
+}
+/* 탭 헤더 탭 텍스트 선택 */
+.p1-tabHeader-tab-text-selected {
+  color: #0b4c8c;
+}
+/* 탭 헤더 탭 텍스트 호버 */
+.p1-tabHeader-tab-text-hover:hover {
+  color: #0b4c8c;
+}
+
+/* 채팅 배경 */
+.p1-chat-bg {
+  color: #0b4c8c;
+}
+/* 채팅 테두리 */
+.p1-chat-border {
+  color: #0b4c8c;
+}
+/* 채팅 텍스트 제목 */
+.p1-chat-text-sender {
+  color: #0b4c8c;
+}
+/* 채팅 텍스트 내용 */
+.p1-chat-text-message {
+  color: #0b4c8c;
+}
+/* 채팅 텍스트 플로트 */
+.p1-chat-text-date {
+  color: #0b4c8c;
+}
+/* 채팅 날짜 표시 */
+.p1-chat-date-bg {
+  color: #0b4c8c;
+}
+/* 채팅 날짜 테두리 */
+.p1-chat-date-border {
+  color: #0b4c8c;
+}
+/* 채팅 날짜 텍스트 */
+.p1-chat-date-text {
+  color: #0b4c8c;
+}
+
+/* 프로필 배경 */
+.p1-profile-bg {
+  color: #0b4c8c;
+}
+/* 프로필 테두리 */
+.p1-profile-border {
+  color: #0b4c8c;
+}
+/* 프로필 제목1 */
+.p1-profile-title1 {
+  color: #0b4c8c;
+}
+/* 프로필 제목2 */
+.p1-profile-title2 {
+  color: #0b4c8c;
+}
+/* 프로필 서브제목 */
+.p1-profile-subtitle {
+  color: #0b4c8c;
+}
+/* 프로필 플로트 */
+.p1-profile-float {
+  color: #0b4c8c;
+}
+/* 프로필 텍스트 */
+.p1-profile-paragraph {
+  color: #0b4c8c;
+}
+
+
+/* 버튼 */
+/* Primary 버튼 */
+.p1-button-primary {
+  color: #0b4c8c;
+}
+/* Primary 버튼 호버 */
+.p1-button-primary:hover {
+  color: #0b4c8c;
+}
+/* Primary 버튼 선택 */
+.p1-button-primary-selected {
+  color: #0b4c8c;
+}
+/* Primary 버튼 비활성화 */
+.p1-button-primary:disabled {
+  color: #0b4c8c;
+}
+
+
+/* Secondary 버튼 */
+.p1-button-secondary {
+  color: #0b4c8c;
+}
+/* Secondary 버튼 호버 */
+.p1-button-secondary:hover {
+  color: #0b4c8c;
+}
+/* Secondary 버튼 선택 */
+.p1-button-secondary-selected {
+  color: #0b4c8c;
+}
+/* Secondary 버튼 비활성화 */
+.p1-button-secondary:disabled {
+  color: #0b4c8c;
+}
+
+
+/* Destructive 버튼 */
+.p1-button-destruct {
+  color: #0b4c8c;
+}
+/* Destructive 버튼 호버 */
+.p1-button-destruct:hover {
+  color: #0b4c8c;
+}
+/* Destructive 버튼 선택 */
+.p1-button-destruct-selected {
+  color: #0b4c8c;
+}
+/* Destructive 버튼 비활성화 */
+.p1-button-destruct:disabled {
+  color: #0b4c8c;
+}
+
+
+/* Outline 버튼 */
+.p1-button-outline {
+  color: #0b4c8c;
+}
+/* Outline 버튼 호버 */
+.p1-button-outline:hover {
+  color: #0b4c8c;
+}
+/* Outline 버튼 선택 */
+.p1-button-outline-selected {
+  color: #0b4c8c;
+}
+/* Outline 버튼 비활성화 */
+.p1-button-outline:disabled {
+  color: #0b4c8c;
+}
+
+
+/* Ghost 버튼 */
+.p1-button-ghost {
+  color: #0b4c8c;
+}
+/* Ghost 버튼 호버 */
+.p1-button-ghost:hover {
+  color: #0b4c8c;
+}
+/* Ghost 버튼 선택 */
+.p1-button-ghost-selected {
+  color: #0b4c8c;
+}
+/* Ghost 버튼 비활성화 */
+.p1-button-ghost:disabled {
+  color: #0b4c8c;
+}
+
+
+/* Modal */
+/* Modal 오버레이 */
+.p1-modal-overlay {
+  color: #0b4c8c;
+}
+/* Modal 컨텐츠 배경 */
+.p1-modal-content-bg {
+  color: #0b4c8c;
+}
+/* Modal 컨텐츠 테두리 */
+.p1-modal-content-border {
+  color: #0b4c8c;
+}
+/* Modal 컨텐츠 제목 */
+.p1-modal-content-title {
+  color: #0b4c8c;
+}
+/* Modal 컨텐츠 텍스트 */
+.p1-modal-content-text {
+  color: #0b4c8c;
+}
+
+
+/* Scrollbar */
+/* Scrollbar 커스텀 너비 */
+.p1-scrollbar-custom::-webkit-scrollbar {
+  width: 1px;
+}
+/* Scrollbar 커스텀 트랙 */
+.p1-scrollbar-custom::-webkit-scrollbar-track {
+  background-color: #0b4c8c;
+}
+/* Scrollbar 커스텀 썸 */
+.p1-scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #0b4c8c;
+}
+/* Scrollbar 커스텀 썸 호버 */
+.p1-scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #0b4c8c;
+}
+
+
+/* Table */
+/* Table 뒷 배경색 */
+.p1-table-container-bg {
+  background-color: #0b4c8c;
+}
+/* Table 테두리 */
+.p1-table-container-border {
+  background-color: #0b4c8c;
+}
+/* Table 배경색 */
+.p1-table {
+  background-color: #0b4c8c;
+}
+/* Table 헤더 */
+.p1-table-header {
+  background-color: #0b4c8c;
+}
+/* Table 헤더 텍스트 */
+.p1-table-header-text {
+  background-color: #0b4c8c;
+}
+/* Table 바디 */
+.p1-table-body {
+  background-color: #0b4c8c;
+}
+/* Table 바디 테두리 */
+.p1-table-body-border {
+  background-color: #0b4c8c;
+}
+/* Table 바디 텍스트 */
+.p1-table-body-text {
+  background-color: #0b4c8c;
+}
+/* Table 캡션 배경 */
+.p1-table-caption-bg {
+  background-color: #0b4c8c;
+}
+/* Table 캡션 텍스트 */
+.p1-table-caption-text {
+  background-color: #0b4c8c;
+}
