@@ -32,7 +32,7 @@ export function ChatPage({
   className?: string;
 }) {
   const { messages, prependMessages, setMessages } = useMessageStore();
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const isFetching = useRef(false);
   const prevMessageLengthRef = useRef(0);
@@ -45,17 +45,26 @@ export function ChatPage({
   useEffect(() => {
     (async () => {
       const res = await getMessages(workspaceId, tabId, undefined);
-      if (res.messages && res.messages.length) {       
+      if (res.messages && res.messages.length) {
         const new_messages = res.messages.map((msg: any) => {
           return {
-            senderId: msg.sender_id, msgId: msg.msg_id, nickname: msg.nickname,
-            content: msg.content, image: msg.image, createdAt: msg.created_at,
-            isUpdated: msg.is_updated, fileUrl: msg.file_url, checkCnt: msg.e_check_cnt,
-            clapCnt: msg.e_clap_cnt, likeCnt: msg.e_like_cnt, sparkleCnt: msg.e_sparkle_cnt,
-            prayCnt: msg.e_pray_cnt, myToggle: msg.my_toggle
+            senderId: msg.sender_id,
+            msgId: msg.msg_id,
+            nickname: msg.nickname,
+            content: msg.content,
+            image: msg.image,
+            createdAt: msg.created_at,
+            isUpdated: msg.is_updated,
+            fileUrl: msg.file_url,
+            checkCnt: msg.e_check_cnt,
+            clapCnt: msg.e_clap_cnt,
+            likeCnt: msg.e_like_cnt,
+            sparkleCnt: msg.e_sparkle_cnt,
+            prayCnt: msg.e_pray_cnt,
+            myToggle: msg.my_toggle,
           };
         });
-        console.log("getmessages, chatpage: ", new_messages[0].myToggle)
+        console.log("getmessages, chatpage: ", new_messages[0].myToggle);
         setMessages(new_messages);
       } else {
         setMessages([]);
@@ -96,18 +105,27 @@ export function ChatPage({
 
       if (res.messages && res.messages.length > 0) {
         const new_messages = res.messages.map((msg: any) => {
-           return {
-            senderId: msg.sender_id, msgId: msg.msg_id, nickname: msg.nickname,
-            content: msg.content, image: msg.image, createdAt: msg.created_at,
-            isUpdated: msg.is_updated, fileUrl: msg.file_url, checkCnt: msg.e_check_cnt,
-            clapCnt: msg.e_clap_cnt, likeCnt: msg.e_like_cnt, sparkleCnt: msg.e_sparkle_cnt,
-            prayCnt: msg.e_pray_cnt, myToggle: msg.my_toggle
+          return {
+            senderId: msg.sender_id,
+            msgId: msg.msg_id,
+            nickname: msg.nickname,
+            content: msg.content,
+            image: msg.image,
+            createdAt: msg.created_at,
+            isUpdated: msg.is_updated,
+            fileUrl: msg.file_url,
+            checkCnt: msg.e_check_cnt,
+            clapCnt: msg.e_clap_cnt,
+            likeCnt: msg.e_like_cnt,
+            sparkleCnt: msg.e_sparkle_cnt,
+            prayCnt: msg.e_pray_cnt,
+            myToggle: msg.my_toggle,
           };
         });
         prependMessages(new_messages);
         requestAnimationFrame(() => {
-            const newHeight = el.scrollHeight;
-            el.scrollTop = newHeight - previousHeight;
+          const newHeight = el.scrollHeight;
+          el.scrollTop = newHeight - previousHeight;
         });
       }
       isFetching.current = false;
@@ -135,18 +153,19 @@ export function ChatPage({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={`flex w-full min-h-0 overflow-y-auto scrollbar-thin ${className}`}
-      onScroll={(event) => {
-        handleScroll(event);
-      }}
-    >
+    <div className={`flex flex-col w-full h-full ${className}`}>
       <SSEListener />
       <WebSocketLikeClient workspaceId={workspaceId} tabId={tabId} />
       <WebSocketProfileClient workspaceId={workspaceId} tabId={tabId} />
       <WebSocketClient workspaceId={workspaceId} tabId={tabId} />
-      <div className="text-m pl-5 w-full">
+      {/* 날짜 헤더의 sticky를 위함, overflow-y-auto scrollbar-thin의 위치는 여기에 고정되어야 함 */}
+      <div
+        className="flex-1 overflow-y-auto scrollbar-thin"
+        ref={containerRef}
+        onScroll={(event) => {
+          handleScroll(event);
+        }}
+      >
         {messages.map((msg, idx) => {
           const prev = messages[idx - 1];
           const todayKey = msg.createdAt ? dayStart(msg.createdAt) : null;

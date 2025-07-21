@@ -8,8 +8,18 @@ interface FileDownloadProps {
 }
 
 export function FileDownload({ fileUrl }: FileDownloadProps) {
+  // 안전한 디코딩 함수
+  const safeDecodeURIComponent = (str: string): string => {
+    try {
+      return decodeURIComponent(str);
+    } catch (error) {
+      console.warn("URI 디코딩 실패:", error);
+      return str; // 디코딩 실패 시 원본 문자열 반환
+    }
+  };
+
   const fileName = fileUrl.split("/").pop() || "";
-  const decodedFileName = decodeURIComponent(fileName);
+  const decodedFileName = safeDecodeURIComponent(fileName);
   const fileExtension = getFileExtension(fileName);
   const fileIcon = getFileIcon(fileName);
 

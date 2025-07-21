@@ -172,7 +172,7 @@ export function ChatProfile({
             <HoverCardTrigger asChild>
               <button
                 onClick={() => openProfile(senderId)}
-                className="w-[40px] mr-[8px] cursor-pointer"
+                className="w-[40px] mr-[8px] cursor-pointer ml-4.5"
               >
                 <img
                   src={imgSrc}
@@ -189,7 +189,7 @@ export function ChatProfile({
           </HoverCard>
         </div>
       ) : (
-        <div className="flex flex-shrink-0 items-center justify-end text-xxs chat-time-stamp w-[40px] mr-[8px]">
+        <div className="flex flex-shrink-0 items-center justify-end text-xxs ml-4.5 chat-time-stamp w-[40px] mr-[8px]">
           <div className="hidden group-hover:block">{time.split(" ")[1]}</div>
         </div>
       )}

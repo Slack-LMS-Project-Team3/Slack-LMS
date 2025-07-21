@@ -7,7 +7,7 @@ export const Modal = Dialog.Root;
 export const ModalPortal = Dialog.Portal;
 
 export const ModalOverlay = (props: Dialog.DialogOverlayProps) => (
-  <Dialog.Overlay className="fixed inset-0 bg-black/50" {...props} />
+  <Dialog.Overlay className="fixed" {...props} />
 );
 
 export const ModalContent = (props: Dialog.DialogContentProps) => (

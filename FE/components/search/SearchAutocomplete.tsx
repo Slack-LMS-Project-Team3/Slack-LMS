@@ -75,13 +75,13 @@ export default function SearchAutocomplete() {
   };
 
   return (
-    <div className="relative text-white flex items-center">
+    <div className="relative flex items-center w-full">
       {/* 검색 모드 셀렉터 (사용자 찾기 / 메시지 찾기) */}
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="w-32 justify-between bg-gray-700 rounded-r-none hover:bg-gray-600 space-x-1"
+            className="flex-none px-3 text-white justify-between bg-gray-700 rounded-r-none hover:bg-gray-600"
           >
             {searchMode === "user" ? (
               <div className="inline-flex items-center space-x-2">
@@ -100,7 +100,7 @@ export default function SearchAutocomplete() {
         <PopoverContent className="w-32 py-[2px] text-white" align="start">
           <div>
             <Button
-              className={`w-full justify-start text-sm bg-gray-700`}
+              className="w-full justify-start text-sm bg-gray-700"
               onClick={() => handleModeSelect("user")}
             >
               <User className="size-4" />
@@ -108,7 +108,7 @@ export default function SearchAutocomplete() {
             </Button>
             <hr className="border-gray-500" />
             <Button
-              className={`w-full justify-start text-sm bg-gray-700`}
+              className="w-full justify-start text-sm bg-gray-700"
               onClick={() => handleModeSelect("tab")}
               disabled={!tabId}
             >
@@ -120,7 +120,7 @@ export default function SearchAutocomplete() {
       </Popover>
 
       {/* 검색창 */}
-      <div className="relative">
+      <div className="relative flex-1 min-w-0">
         <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
         <Input
           type="text"
@@ -128,7 +128,7 @@ export default function SearchAutocomplete() {
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          className="pl-7 w-150 bg-gray-700 text-white border-gray-600 rounded-l-none"
+          className="pl-7 w-full bg-gray-700 text-white border-gray-600 rounded-l-none"
         />
       </div>
 
