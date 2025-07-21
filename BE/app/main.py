@@ -26,6 +26,7 @@ from app.router import notification
 from app.router import db
 from app.router import role
 from app.router import sse  # SSE
+from app.router import notion
 
 load_dotenv()
 
@@ -33,7 +34,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://3.36.61.200:3000", "http://jungle-lms.site:3000"], 
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://3.36.61.200:3000", "http://jungle-lms.site:3000",], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["Authorization", "Content-Type", "Accept"],
@@ -45,7 +46,12 @@ app.include_router(router=auth.router, prefix="/api")
 app.include_router(router=s3.router, prefix="/api")
 app.include_router(router=push.router, prefix="/api")
 app.include_router(router=notification.router, prefix="/api")
+<<<<<<< Updated upstream
 
+=======
+app.include_router(router=group.router, prefix="/api")
+app.include_router(router=links.router, prefix="/api")
+>>>>>>> Stashed changes
 app.include_router(router=workspace_members.router, prefix="/api")
 app.include_router(router=tab.router, prefix="/api")
 app.include_router(router=workspace.router, prefix="/api")
@@ -53,6 +59,7 @@ app.include_router(router=direct_message.router, prefix="/api")
 app.include_router(router=db.router, prefix="/api")
 app.include_router(router=role.router, prefix="/api")
 app.include_router(router=sse.router, prefix="/api")
+app.include_router(router=notion.router, prefix="/api")
 
 # 예외 핸들러 등록
 app.add_exception_handler(CustomHTTPException, custom_http_exception_handler)
