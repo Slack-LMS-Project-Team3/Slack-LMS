@@ -196,7 +196,7 @@ export default function AppSidebar({ width }: SidebarProps) {
     <SidebarProvider>
       <Sidebar
         collapsible="none"
-        className="flex flex-col h-full w-full p-0 bg-gray-800 text-gray-400"
+        className="p1-sidebar-bg flex flex-col h-full w-full p-0"
       >
         {/* 사이드바 헤더 */}
         <SidebarHeader>
@@ -237,11 +237,11 @@ export default function AppSidebar({ width }: SidebarProps) {
         <SidebarContent className="flex flex-1 flex-col overflow-y-auto scrollbar-thin">
           {sectionType.map((section) => (
             <SidebarGroup key={section.id} className="flex flex-col flex-none">
-              <SidebarGroupLabel className="flex flex-row items-center gap-1">
+              <SidebarGroupLabel className="p1-sidebar-text-section-bg flex flex-row items-center gap-1">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="flex size-4 p-3 text-gray-200"
+                  className="p1-sidebar-text-section-bg p1-sidebar-text-section-text flex size-4 p-3"
                   onClick={() => toggleSection(section.id)}
                 >
                   {openSections[section.id] ? (
@@ -252,9 +252,9 @@ export default function AppSidebar({ width }: SidebarProps) {
                 </Button>
                 {React.createElement(section.icon, {
                   size: 22,
-                  className: "text-gray-200",
+                  className: "p1-sidebar-text-section-text",
                 })}
-                <span className="text-m font-bold text-gray-200 truncate">
+                <span className="p1-sidebar-text-section-text text-m-bold truncate">
                   {section.label}
                 </span>
               </SidebarGroupLabel>
@@ -276,8 +276,8 @@ export default function AppSidebar({ width }: SidebarProps) {
                           <SidebarMenuItem key={tab.tab_id}>
                             <SidebarMenuButton
                               isActive={isActive}
-                              className={`flex items-center px-2 py-1 space-x-2 rounded-sm flex-1 min-w-0 cursor-pointer
-                              ${emphasized && "text-white font-bold"}`}
+                              className={`p1-sidebar-tab p1-sidebar-text-tab flex items-center px-2 py-1 space-x-2 rounded-sm flex-1 min-w-0 cursor-pointer
+                              ${emphasized && "p1-sidebar-text-tab-notification"}`}
                               onClick={() => {
                                 clearUnread(tab.tab_id);
                                 clearInvited(tab.tab_id);
@@ -301,7 +301,7 @@ export default function AppSidebar({ width }: SidebarProps) {
                                 {tab.tab_name}
                               </span>
                               {hasUnread && !isActive && (
-                                <span className="ml-auto text-s-bold">
+                                <span className="p1-sidebar-text-tab-notification ml-auto text-s-bold">
                                   {count}
                                 </span>
                               )}
@@ -325,12 +325,12 @@ export default function AppSidebar({ width }: SidebarProps) {
                             <SidebarMenuButton
                               asChild
                               isActive={false}
-                              className="flex items-center px-2 py-1 space-x-2 flex-1 min-w-0 cursor-pointer"
+                              className="p1-sidebar-tab flex items-center px-2 py-1 space-x-2 flex-1 min-w-0 cursor-pointer"
                             >
                               <span className="flex flex-row gap-2 items-center truncate">
                                 <Plus
                                   size={18}
-                                  className="bg-gray-700 rounded-sm cursor-pointer"
+                                  className="p1-sidebar-tab-add rounded-sm cursor-pointer"
                                 />
                                 Add Tab
                               </span>
@@ -351,7 +351,7 @@ export default function AppSidebar({ width }: SidebarProps) {
                             <Button
                               variant="secondary"
                               onClick={() => handleModalOpenChange(false)}
-                              className="flex flex-1"
+                              className="p1-button-secondary p1-button-secondary-selected flex flex-1"
                             >
                               Cancel
                             </Button>
@@ -362,7 +362,7 @@ export default function AppSidebar({ width }: SidebarProps) {
                                 handleAddTab(selectedSectionId, tabName)
                               }
                               disabled={tabName.trim() === ""}
-                              className="flex flex-1"
+                              className="p1-button-primary p1-button-primary-selected flex flex-1"
                             >
                               Create
                             </Button>
@@ -381,7 +381,7 @@ export default function AppSidebar({ width }: SidebarProps) {
           {/* 프로필 메뉴 호출 */}
           <Popover>
             <PopoverTrigger asChild>
-              <SidebarMenuButton className="h-13 p-2">
+              <SidebarMenuButton className="p1-sidebar-profile h-13 p-2">
                 <div className="flex flex-row items-center w-full gap-2">
                   {/* 프로필 이미지 */}
                   <img
@@ -394,10 +394,10 @@ export default function AppSidebar({ width }: SidebarProps) {
                     className="flex flex-col overflow-hidden"
                     style={{ width }}
                   >
-                    <span className="text-md font-bold text-gray-200 truncate">
+                    <span className="text-m-bold p1-sidebar-profile-text truncate">
                       {profile?.nickname}
                     </span>
-                    <span className="text-xs text-gray-400 truncate">
+                    <span className="text-xs p1-sidebar-profile-email truncate">
                       {profile?.email}
                     </span>
                   </div>

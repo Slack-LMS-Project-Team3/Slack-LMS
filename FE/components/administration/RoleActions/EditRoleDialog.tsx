@@ -201,7 +201,7 @@ export function EditRoleDialog({ role, isOpen, setIsOpen, onEditSuccess }: EditR
             disabled={
               form.roleName.trim() === "" || form.permissions.length === 0
             }
-            className="flex-1"
+            className="p1-button-primary p1-button-primary-selected flex-1"
           >
             저장
           </Button>

@@ -77,7 +77,7 @@ export function PossibleMembersModal({
       </SidebarMenu>
       <SidebarFooter className="p-4">
         <Button
-          className="w-full"
+          className="w-full p1-button-primary p1-button-primary-selected"
           onClick={inviteMembers}
           disabled={selectedMembers.length === 0}
         >

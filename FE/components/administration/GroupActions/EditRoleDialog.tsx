@@ -123,7 +123,7 @@ export function EditRoleDialog({ group, isOpen, setIsOpen, onEditSuccess }: Edit
           <Button
             onClick={handleSaveRole}
             disabled={!selectedRoleId || selectedRoleId === String(group.role_id)}
-            className="flex-1"
+            className="p1-button-primary p1-button-primary-selected flex-1"
           >
             설정
           </Button>

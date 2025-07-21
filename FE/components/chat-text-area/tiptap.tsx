@@ -306,7 +306,7 @@ export function TipTap() {
             {/* 툴바 버튼 5개 정도 */}
             {[...Array(5)].map((_, i) => (
               <Skeleton key={i} className="w-9 h-9 rounded-md" />
-            ))}
+            ))}d
           </div>
         </div>
         {/* 에디터 스켈레톤 */}

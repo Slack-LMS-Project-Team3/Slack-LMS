@@ -81,7 +81,7 @@ export default function SearchAutocomplete() {
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="flex-none px-3 text-white justify-between bg-gray-700 rounded-r-none hover:bg-gray-600"
+            className="p1-bar-search-bg flex-none px-3 justify-between rounded-r-none"
           >
             {searchMode === "user" ? (
               <div className="inline-flex items-center space-x-2">
@@ -100,7 +100,7 @@ export default function SearchAutocomplete() {
         <PopoverContent className="w-32 py-[2px] text-white" align="start">
           <div>
             <Button
-              className="w-full justify-start text-sm bg-gray-700"
+              className={`p1-button-primary p1-button-primary-selected w-full justify-start text-sm`}
               onClick={() => handleModeSelect("user")}
             >
               <User className="size-4" />
@@ -108,7 +108,7 @@ export default function SearchAutocomplete() {
             </Button>
             <hr className="border-gray-500" />
             <Button
-              className="w-full justify-start text-sm bg-gray-700"
+              className={`p1-button-primary p1-button-primary-selected w-full justify-start text-sm`}
               onClick={() => handleModeSelect("tab")}
               disabled={!tabId}
             >
@@ -128,7 +128,7 @@ export default function SearchAutocomplete() {
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          className="pl-7 w-full bg-gray-700 text-white border-gray-600 rounded-l-none"
+          className="p1-bar-search-bg pl-7 w-150 text-white rounded-l-none"
         />
       </div>
 

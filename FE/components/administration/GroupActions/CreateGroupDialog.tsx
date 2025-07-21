@@ -109,7 +109,7 @@ export function CreateGroupDialog({ isOpen, setIsOpen, onCreateSuccess, trigger 
           <Button
             onClick={handleCreateGroup}
             disabled={!groupName.trim() || isSubmitting}
-            className="flex-1"
+            className="p1-button-primary p1-button-primary-selected flex-1"
           >
             생성
           </Button>

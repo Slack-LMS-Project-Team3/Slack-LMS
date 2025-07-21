@@ -266,10 +266,6 @@
 
 /* 채팅 관련 */
 
-.chat-time-stamp {
-  color: rgba(97, 96, 97, 1);
-}
-
 .chat-alarm {
   display: inline-block;
   background-color: #ffc6002e;
@@ -374,87 +370,90 @@
 
 /* UI 폴리싱 */
 
-/* 사이드바 배경색 */
+/* 사이드바 배경색 ✅ */
 .p1-sidebar-bg {
-  color: #0b4c8c;
+  background-color: #99ccff;
 }
-/* 사이드바 탭 */
+/* 사이드바 탭 ✅ */
 .p1-sidebar-tab {
-  color: #0b4c8c;
+  background-color: rgb(176, 217, 243);
 }
-/* 사이드바 탭 호버 */
+/* 사이드바 탭 호버 ✅ */
 .p1-sidebar-tab:hover {
-  color: #0b4c8c;
+  background-color: #93b9df;
 }
-/* 사이드바 탭 선택 */
+/* 사이드바 탭 선택 ✅ */
 .p1-sidebar-tab-selected {
   color: #0b4c8c;
 }
-/* 사이드바 텍스트 섹션 */
-.p1-sidebar-text-section {
-  color: #0b4c8c;
+/* 사이드바 텍스트 섹션 배경 ✅ */
+.p1-sidebar-text-section-bg {
+  background-color: #7ab6f1;
 }
-/* 사이드바 텍스트 탭 */
+/* 사이드바 텍스트 섹션 텍스트 ✅ */
+.p1-sidebar-text-section-text {
+  color: rgb(10, 98, 133);
+}
+/* 사이드바 텍스트 탭 ✅ */
 .p1-sidebar-text-tab {
-  color: #0b4c8c;
+  color: rgb(33, 105, 153);
 }
 /* 사이드바 텍스트 탭 호버 */
 .p1-sidebar-text-tab:hover {
-  color: #0b4c8c;
+  color: white;
 }
 /* 사이드바 텍스트 탭 선택 */
 .p1-sidebar-text-tab-selected {
   color: #0b4c8c;
 }
-/* 사이드바 텍스트 탭 알림*/
+/* 사이드바 텍스트 탭 알림 ✅ */
 .p1-sidebar-text-tab-notification {
-  color: #0b4c8c;
+  color: white;
+  font-style: bold;
 }
-/* 사이드바 프로필 배경*/
-.p1-sidebar-profile-bg {
-  color: #0b4c8c;
+/* 사이드바 프로필 배경/테두리 */
+.p1-sidebar-profile {
+  background-color: #2278ce;
+  border: solid 1px rgb(255, 255, 255);
 }
-/* 사이드바 프로필 테두리*/
-.p1-sidebar-profile-border {
-  color: #0b4c8c;
-}
-/* 사이드바 프로필 텍스트 */
+/* 사이드바 프로필 텍스트 (이름) */
 .p1-sidebar-profile-text {
-  color: #0b4c8c;
+  color: rgb(240, 249, 255);
+}
+/* 사이드바 프로필 텍스트 (이메일) */
+.p1-sidebar-profile-email {
+  color: rgb(218, 240, 255);
+}
+/* 탭 추가 버튼 */
+.p1-sidebar-tab-add {
+  background-color: #7db7f1;
+  color: white;
+}
+/* 탭 추가 버튼 호버 */
+.p1-sidebar-tab-add:hover {
+  background-color: #ffffff;
+  color: #0080ff;
 }
 
 /* 상단바 배경 */
 .p1-bar-bg {
-  color: #0b4c8c;
-}
-/* 상단바 테두리 */
-.p1-bar-border {
-  color: #0b4c8c;
+  background-color: #073158;
+  border: 1px solid #82c1ff;
 }
 /* 상단바 제목 */
 .p1-bar-title {
-  color: #0b4c8c;
+  color: #c1dcf8;
 }
 /* 상단바 검색창 배경*/
 .p1-bar-search-bg {
-  color: #0b4c8c;
-}
-/* 상단바 검색창 라인 */
-.p1-bar-search-ling {
-  color: #0b4c8c;
+  background-color: #7ab6f1;
+  border: solid 1px #dde6f0;
 }
 
 /* 탭 헤더 배경 */
 .p1-tabHeader-bg {
-  color: #0b4c8c;
-}
-/* 탭 헤더 호버 */
-.p1-tabHeader-hover:hover {
-  color: #0b4c8c;
-}
-/* 탭 헤더 제목 */
-.p1-tabHeader-text-title {
-  color: #0b4c8c;
+  color: #0c67bd;
+  background-color: #deefff;
 }
 /* 탭 헤더 플로트 */
 .p1-tabHeader-text-float {
@@ -462,11 +461,11 @@
 }
 /* 탭 헤더 탭 배경 */
 .p1-tabHeader-tab-bg {
-  color: #0b4c8c;
+  background-color: #a3d1ff;
 }
 /* 탭 헤더 탭 호버 */
-.p1-tabHeader-tab-hover:hover {
-  color: #0b4c8c;
+.p1-tabHeader-tab-bg:hover {
+  background-color: #3198ff;
 }
 /* 탭 헤더 탭 선택 */
 .p1-tabHeader-tab-selected {
@@ -476,77 +475,73 @@
 .p1-tabHeader-tab-text {
   color: #0b4c8c;
 }
-/* 탭 헤더 탭 텍스트 선택 */
-.p1-tabHeader-tab-text-selected {
-  color: #0b4c8c;
-}
-/* 탭 헤더 탭 텍스트 호버 */
-.p1-tabHeader-tab-text-hover:hover {
-  color: #0b4c8c;
-}
 
 /* 채팅 배경 */
 .p1-chat-bg {
-  color: #0b4c8c;
+  background-color: #f7fbff;
+}
+/* 각 채팅 호버시 */
+.p1-each-chat:hover {
+  background-color: #eff7ff;
 }
 /* 채팅 테두리 */
 .p1-chat-border {
   color: #0b4c8c;
 }
-/* 채팅 텍스트 제목 */
+/* 채팅 텍스트 제목 (이름) */
 .p1-chat-text-sender {
-  color: #0b4c8c;
+  color: #0080ff;
 }
-/* 채팅 텍스트 내용 */
+/* 채팅 텍스트 내용 (채팅) */
 .p1-chat-text-message {
-  color: #0b4c8c;
+  color: #0b4e91;
 }
-/* 채팅 텍스트 플로트 */
+/* 채팅 텍스트 플로트 (시간, 호버 시 시간) */
 .p1-chat-text-date {
-  color: #0b4c8c;
+  color: #86b6e7;
 }
-/* 채팅 날짜 표시 */
-.p1-chat-date-bg {
-  color: #0b4c8c;
+/* 채팅 텍스트 플로트 (편집됨) */
+.p1-chat-text-edit {
+  color: #6093c5;
 }
-/* 채팅 날짜 테두리 */
-.p1-chat-date-border {
-  color: #0b4c8c;
-}
-/* 채팅 날짜 텍스트 */
-.p1-chat-date-text {
-  color: #0b4c8c;
+/* 채팅 날짜 배경, 테두리, 텍스트 */
+.p1-chat-date {
+  background-color: #ffffff;
+  border: solid 1px #bddeff;
+  color: #2d73b9;
 }
 
-/* 프로필 배경 */
-.p1-profile-bg {
-  color: #0b4c8c;
+/* 프로필 배경, 테두리*/
+.p1-profile {
+  background-color: #4b89c7;
+  border: solid 1px #c7e3ff;
 }
-/* 프로필 테두리 */
-.p1-profile-border {
-  color: #0b4c8c;
-}
-/* 프로필 제목1 */
+/* 프로필 제목1(Profile) */
 .p1-profile-title1 {
-  color: #0b4c8c;
+  color: #ffffff;
 }
-/* 프로필 제목2 */
+/* 프로필 제목2(이름) */
 .p1-profile-title2 {
-  color: #0b4c8c;
+  color: #fffffa;
 }
-/* 프로필 서브제목 */
-.p1-profile-subtitle {
-  color: #0b4c8c;
+/* 프로필 내 버튼 (DM, 프로필 편집 버튼) */
+.p1-profile-button {
+  background-color: #5badff;
+  color: #ffffff;
 }
-/* 프로필 플로트 */
+/* 프로필 플로트(권한, 이메일 주소, 깃허브 등 제목 정보) */
 .p1-profile-float {
-  color: #0b4c8c;
+  color: #ffffed;
 }
-/* 프로필 텍스트 */
+/* 프로필 텍스트(이름, 이메일 주소, 깃허브 등 주어진 정보) */
 .p1-profile-paragraph {
-  color: #0b4c8c;
+  color: #ffffff;
 }
 
+/* 팁탭 상단 */
+.p1-tip-header {
+  background-color: #ffffff;
+}
 
 /* 버튼 */
 /* Primary 버튼 */

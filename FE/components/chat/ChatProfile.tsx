@@ -161,7 +161,7 @@ export function ChatProfile({
       }}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        `relative flex px-[8px] py-[4.5px] group${isEditMode ? " bg-blue-50" : " hover:bg-muted"}`,
+        `relative flex px-[8px] py-[4.5px] group${isEditMode ? " bg-blue-50" : " p1-each-chat"}`,
         className,
       )}
     >
@@ -176,7 +176,7 @@ export function ChatProfile({
               >
                 <img
                   src={imgSrc}
-                  className="w-[40px] h-[40px] mt-1 rounded-lg object-cover bg-gray-400"
+                  className="w-[40px] h-[40px] mt-1 rounded-lg object-cover bg-white-500"
                   alt="profile"
                 />
               </button>
@@ -189,7 +189,7 @@ export function ChatProfile({
           </HoverCard>
         </div>
       ) : (
-        <div className="flex flex-shrink-0 items-center justify-end text-xxs ml-4.5 chat-time-stamp w-[40px] mr-[8px]">
+        <div className="p1-chat-text-date flex flex-shrink-0 items-center justify-end text-xxs ml-4.5 w-[40px] mr-[8px]">
           <div className="hidden group-hover:block">{time.split(" ")[1]}</div>
         </div>
       )}
@@ -214,7 +214,7 @@ export function ChatProfile({
                   <HoverCardTrigger asChild>
                     <span
                       onClick={() => openProfile(senderId)}
-                      className="text-m-bold cursor-pointer hover:underline"
+                      className="p1-chat-text-sender text-m-bold cursor-pointer hover:underline"
                     >
                       {nickname}
                     </span>
@@ -226,18 +226,18 @@ export function ChatProfile({
                   />
                 </HoverCard>
 
-                <span className="text-xs chat-time-stamp">{time}</span>
+                <span className="p1-chat-text-date text-xs">{time}</span>
               </div>
             )}
 
-            <div className="flex flex-wrap flex-row items-center message-content whitespace-pre-wrap break-words break-anywhere text-m">
+            <div className="p1-chat-text-message flex flex-wrap flex-row items-center message-content whitespace-pre-wrap break-words break-anywhere text-m">
               <div
                 className="mr-2"
                 dangerouslySetInnerHTML={{ __html: safeHTML }}
               />
               {isUpdated ? (
                 <span
-                  className="text-xs text-gray-500"
+                  className="p1-chat-text-edit text-xs"
                   style={{ whiteSpace: "nowrap" }}
                 >
                   (편집됨)

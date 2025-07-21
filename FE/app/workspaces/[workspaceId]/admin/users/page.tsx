@@ -239,7 +239,7 @@ export default function UserTablePage() {
                     !form.role_id ||
                     form.role_id === ""
                   }
-                  className="flex flex-1"
+                  className="p1-button-primary p1-button-primary-selected flex flex-1"
                 >
                   초대
                 </Button>

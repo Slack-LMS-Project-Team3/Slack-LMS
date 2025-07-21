@@ -33,7 +33,7 @@ export function MiniProfile({ senderId, imgSrc, nickname }: MiniProfileProps) {
           <div className="mt-1.5">
             {/* DM 버튼 */}
             <Button
-              className="cursor-pointer"
+              className="p1-button-primary p1-button-primary-selected cursor-pointer"
               variant="outline"
               size="sm"
               onClick={() => createDM(senderId)}
@@ -44,7 +44,7 @@ export function MiniProfile({ senderId, imgSrc, nickname }: MiniProfileProps) {
             {/* 프로필 버튼 */}
             <Button
               onClick={() => openProfile(senderId)}
-              className="ml-1 cursor-pointer"
+              className="p1-button-primary p1-button-primary-selected ml-1 cursor-pointer"
               variant="outline"
               size="sm"
             >

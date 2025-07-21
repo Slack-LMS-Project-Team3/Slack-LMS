@@ -15,11 +15,11 @@ export default function WorkspacesLayout({
   return (
     <div className="flex h-full flex-col w-full overflow-hidden">
       {/* 상단 바 */}
-      <header className="flex h-11 items-center p-4 bg-black shadow-xl justify-between">
+      <header className="p1-bar-bg flex h-11 items-center p-4 shadow-xl justify-between">
         {/* Left side - Logo */}
         <div className="flex-none flex items-center">
           <img src="/logo.png" className="w-7 h-7 mr-1" />
-          <span className="zen-antique-soft-regular font-bold text-xl text-white tracking-widest">
+          <span className="zen-antique-soft-regular font-bold text-xl p1-bar-title tracking-widest">
             Polaris
             <span className="relative -translate-y-3.5 inline-block text-blue-200">
               .

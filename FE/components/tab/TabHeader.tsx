@@ -62,7 +62,7 @@ export function TabHeader() {
   };
 
   return (
-    <div className="sticky top-0 bg-white shadow-sm">
+    <div className="p1-tabHeader-bg sticky top-0 shadow-sm">
       <div className="flex items-center h-[50px] px-[17px]">
         <div className="flex flex-1 justify-between items-center h-[30px] px-[3px]">
           <div className="flex items-center">
@@ -78,7 +78,7 @@ export function TabHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="flex items-center gap-1 px-7 hover:bg-gray-200"
+              className="p1-tabHeader-tab-bg flex items-center gap-1 px-7"
             >
               <LogOut size={28} />
             </Button>
@@ -88,21 +88,21 @@ export function TabHeader() {
       <Tabs value={getCurrentTab()} onValueChange={handleTabChange}>
         <TabsList>
           {tabInfo?.section_id === 2 && (
-            <TabsTrigger value="canvas">
+            <TabsTrigger value="canvas" className="p1-tabHeader-tab-bg">
               <StickyNote />
               <p>Canvas</p>
             </TabsTrigger>
           )}
-          <TabsTrigger value="messages">
+          <TabsTrigger value="messages" className="p1-tabHeader-tab-bg">
             <MessageCircle />
             <p>Message</p>
           </TabsTrigger>
-          <TabsTrigger value="links">
+          <TabsTrigger value="links" className="p1-tabHeader-tab-bg">
             <Link />
             <p>Link</p>
           </TabsTrigger>
           {tabInfo?.section_id === 2 && (
-            <TabsTrigger value="report">
+            <TabsTrigger value="report" className="p1-tabHeader-tab-bg">
               <ChartColumn />
               <p>Report</p>
             </TabsTrigger>

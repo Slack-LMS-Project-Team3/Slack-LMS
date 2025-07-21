@@ -86,7 +86,7 @@ export function PossibleGroupsModal({
       </div>
       <SidebarFooter className="p-4">
         <Button
-          className="w-full"
+          className="w-full p1-button-primary p1-button-primary-selected"
           onClick={handleInvite}
           disabled={selectedGroups.length === 0}
         >

@@ -163,17 +163,18 @@ export default function ProfilePage() {
 
   return (
     <div
-      className="flex flex-col h-full w-full gap-0 pt-4 bg-background text-foreground"
+      className="p1-profile flex flex-col h-full w-full gap-0 pt-4 bg-background text-foreground"
       style={{ flexBasis: "100%" }} 
     >
+      {/* 구분선 */}
       <div className="flex flex-col gap-3 pb-2 border-b border-gray-200">
         {/* 헤더 (프로필과 닫기 버튼) */}
         <div className="flex flex-row w-full px-4">
-          <h1 className="flex flex-1 items-center justify-start text-xl font-bold">
+          <h1 className="p1-profile-title1 flex flex-1 items-center justify-start text-xl">
             Profile
           </h1>
           <button
-            className="flex flex-1 items-center justify-end text-sm"
+            className="p1-button-primary p1-button-primary-selected flex flex-1 items-center justify-end text-sm"
             onClick={close}
           >
             <X size={20} />
@@ -189,10 +190,10 @@ export default function ProfilePage() {
         </div>
         {/* 사용자 이름과 역할 */}
         <div className="flex w-full items-end justify-between gap-2 px-4">
-          <h1 className="flex-1 min-w-0 justify-start text-lg font-bold truncate">
+          <h1 className="p1-profile-title2 flex-1 min-w-0 justify-start text-lg font-bold truncate">
             {profile?.nickname}
           </h1>
-          <h1 className="flex-shrink-0 justify-end text-sm font-bold text-gray-500">
+          <h1 className="p1-profile-float flex-shrink-0 justify-end text-sm font-bold">
             {profile?.role_name}
           </h1>
         </div>
@@ -205,7 +206,7 @@ export default function ProfilePage() {
             }}
             variant="outline"
             size="sm"
-            className="flex flex-1 min-w-0 items-center justify-start text-md font-bold cursor-pointer"
+            className="p1-profile-button flex flex-1 min-w-0 items-center justify-start text-md font-bold cursor-pointer"
           >
             <Mail size={24} />
             <span className="truncate">Direct Message</span>
@@ -216,7 +217,7 @@ export default function ProfilePage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex flex-1 min-w-0 items-center justify-start text-md font-bold"
+                  className="flex flex-1 min-w-0 items-center justify-start text-md font-bold cursor-pointer"
                 >
                   <SquarePen size={24} />
                   <span className="truncate">Edit Profile</span>
@@ -323,7 +324,7 @@ export default function ProfilePage() {
                     type="submit"
                     variant="default"
                     disabled={saving || !form.nickname}
-                    className="w-full"
+                    className="w-full p1-button-primary p1-button-primary-selected"
                   >
                     {saving ? "Saving..." : "Save Changes"}
                   </Button>
@@ -336,40 +337,40 @@ export default function ProfilePage() {
       <div className="flex flex-col gap-4 py-3 overflow-y-auto scrollbar-thin">        
         {/* 이메일 */}
         <div className="flex flex-col min-h-[48px] w-full min-w-0 justify-start gap-1 px-4">
-          <span className="flex-1 min-w-0 text-md font-bold text-gray-500 truncate">
+          <span className="p1-profile-float flex-1 min-w-0 text-md font-bold text-gray-500 truncate">
             Email address*
           </span>
-          <span className="flex-1 min-w-0 text-md truncate">
+          <span className="p1-profile-paragraph flex-1 min-w-0 text-md truncate">
             {profile?.email}
           </span>
         </div>
         {/* github */}
         <div className="flex flex-col min-h-[48px] w-full min-w-0 justify-start gap-1 px-4">
-          <span className="flex-1 min-w-0 text-md font-bold text-gray-500 truncate">
+          <span className="p1-profile-float flex-1 min-w-0 text-md font-bold text-gray-500 truncate">
             Github
           </span>
-          <span className="flex-1 min-w-0 text-md truncate">
+          <span className="p1-profile-paragraph flex-1 min-w-0 text-md truncate">
             {profile?.github ?? ""}
           </span>
         </div>
         {/* blog */}
         <div className="flex flex-col min-h-[48px] w-full min-w-0 justify-start gap-1 px-4">
-          <span className="flex-1 min-w-0 text-md font-bold text-gray-500 truncate">
+          <span className="p1-profile-float flex-1 min-w-0 text-md font-bold text-gray-500 truncate">
             Blog
           </span>
-          <span className="flex-1 min-w-0 text-md truncate">
+          <span className="p1-profile-paragraph flex-1 min-w-0 text-md truncate">
             {profile?.blog ?? ""}
           </span>
         </div>
         {/* 소속 그룹 */}
         <div className="flex flex-col min-h-0 w-full min-w-0 justify-start gap-1 pb-4 px-4">
-          <span className="flex-1 text-md font-bold text-gray-500">
+          <span className="p1-profile-float flex-1 text-md font-bold text-gray-500">
             Groups
           </span>
           <div className="flex-1 text-md">
             <ul className="list-disc list-inside pl-1">
               {profile?.group_name?.map((group) => (
-                <li key={group} className="truncate">
+                <li key={group} className="truncate p1-profile-paragraph">
                   {group}
                 </li>
               ))}

@@ -136,7 +136,7 @@ export default function EditRole({
           <Button
             onClick={handleSaveRole}
             disabled={!selectedRoleId || selectedRoleId === currentRoleId}
-            className="flex-1"
+            className="p1-button-primary p1-button-primary-selected flex-1"
           >
             설정
           </Button>

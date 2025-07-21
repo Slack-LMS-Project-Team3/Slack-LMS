@@ -90,7 +90,7 @@ export default function AuthCallbackPage() {
         <p className="mb-6 text-red-600">{error}</p>
         <button
           onClick={() => router.push("/")}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="p1-button-primary p1-button-primary-selected px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           홈으로 가기
         </button>

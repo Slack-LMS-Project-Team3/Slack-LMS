@@ -153,7 +153,9 @@ export function ChatPage({
   };
 
   return (
-    <div className={`flex flex-col w-full h-full ${className}`}>
+    <div
+      className={`p1-chat-bg flex flex-col w-full h-full ${className}`}
+    >
       <SSEListener />
       <WebSocketLikeClient workspaceId={workspaceId} tabId={tabId} />
       <WebSocketProfileClient workspaceId={workspaceId} tabId={tabId} />
