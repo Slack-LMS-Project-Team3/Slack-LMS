@@ -162,6 +162,7 @@ export function ChatProfile({
       onMouseLeave={handleMouseLeave}
       className={cn(
         `relative flex px-[8px] py-[4.5px] group${isEditMode ? " bg-blue-50" : " p1-each-chat"}`,
+        `relative flex px-[8px] py-[4.5px] group${isEditMode ? " bg-blue-50" : " p1-each-chat"}`,
         className,
       )}
     >
