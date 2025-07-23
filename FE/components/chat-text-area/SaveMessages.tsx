@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { CircleCheck, Ban } from "lucide-react";
 import { Editor } from "@tiptap/react";
 import { useSaveMessagesStore } from "@/store/saveMessagesStore";
+import { useMessageStore } from "@/store/messageStore";
 
 // props 타입 정의
 interface SaveMessagesProps {
@@ -53,7 +54,12 @@ export default function SaveMessages({
   };
 
   return (
-    <HoverCard open={hoverOpen} onOpenChange={(open) => setHoverOpen(open)}>
+    <HoverCard
+      open={hoverOpen}
+      onOpenChange={(open) => setHoverOpen(open)}
+      openDelay={100}
+      closeDelay={100}
+    >
       {/* 재호버 방지 */}
       <button onClick={() => setHoverOpen((o) => !o)}>
         <HoverCardTrigger asChild>{children}</HoverCardTrigger>
@@ -62,6 +68,8 @@ export default function SaveMessages({
         side="top"
         align="end"
         className="w-100 bg-white text-black border m-0 p-0 mb-0.5 mr-1"
+        onPointerEnter={() => setHoverOpen(true)}
+        onPointerLeave={() => setHoverOpen(false)}
       >
         <div>
           <div className="flex flex-row items-center justify-between pl-5 pr-3 py-3">
@@ -91,7 +99,30 @@ export default function SaveMessages({
                 <div
                   key={message.save_message_id}
                   onClick={() => {
+                    const imgMatch = message.content.match(
+                      /<img[^>]+src=['"]([^'"]+)['"]/,
+                    );
+                    const imgFileUrl = imgMatch ? imgMatch[1] : null;
+
+                    // 파일 다운로드 div에서 fileUrl 추출
+                    const fileDivMatch = message.content.match(
+                      /<div[^>]+fileurl=['"]([^'"]+)['"][^>]*data-type=['"]file-download['"][^>]*>/,
+                    );
+                    const fileDownloadUrl = fileDivMatch
+                      ? fileDivMatch[1]
+                      : null;
+
                     editor?.commands.setContent(message.content);
+
+                    // 이미지 또는 파일 다운로드 URL 설정
+                    if (imgFileUrl) {
+                      useMessageStore.getState().setFileUrl(imgFileUrl);
+                    } else if (fileDownloadUrl) {
+                      useMessageStore.getState().setFileUrl(fileDownloadUrl);
+                    }
+                    console.log("saveMessages content", message.content); // delete
+                    console.log("imgFileUrl:", imgFileUrl);
+                    console.log("fileDownloadUrl:", fileDownloadUrl);
                     setHoverOpen(false);
                   }}
                   className={`

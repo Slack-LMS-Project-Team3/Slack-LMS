@@ -303,11 +303,11 @@ export default function AppSidebar({ width }: SidebarProps) {
                                 <span className="truncate">{tab.tab_name}</span>
                               </span>
                               {hasUnread && !isActive && (
-                                <span className="ml-auto text-s-bold">
-                                  <Button 
-                                    variant="default"                                    
-                                    className="flex flex-fit items-center justify-center bg-yellow-500 text-black font-bold size-6 rounded-full"
-                                  >                                    
+                                <span className="ml-auto flex-none flex-shrink-0">
+                                  <Button
+                                    variant="default"
+                                    className="flex items-center justify-center bg-yellow-500 text-black font-bold size-6 rounded-full"
+                                  >
                                     {count}
                                   </Button>
                                 </span>
