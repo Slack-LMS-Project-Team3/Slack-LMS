@@ -15,6 +15,7 @@ interface SSEPayload {
 
 export function SSEListener() {
   const params = useParams();
+  const tabId = params.tabId as string;
   const workspaceId = params.workspaceId as string;
   const incUnread = useMessageStore((s) => s.incrementUnread);
   const addInvitedTab = useMessageStore((s) => s.addInvitedTab);
@@ -33,7 +34,9 @@ export function SSEListener() {
     // 새로운 메시지 도착함 (new_message 타입)
     es.addEventListener("new_message", (e: MessageEvent) => {
       const p: SSEPayload = JSON.parse(e.data);
-      incUnread(p.tab_id);
+      if (p.tab_id.toString() !== tabId) {
+        incUnread(p.tab_id);
+      }
     });
 
     // 새로운 탭에 초대됨

@@ -40,7 +40,6 @@ class ConnectionManager:
         connections = self.activate_connections.get(workspace_id, {}).get(tab_id, [])
         for connection in connections[:]:
             try:
-                print("broadcast: ", message)
                 await connection.send_text(message)
             except Exception:
                 connections.remove(connection)

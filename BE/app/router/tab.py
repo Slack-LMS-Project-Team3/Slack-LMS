@@ -1,15 +1,18 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from typing import List, Dict
 from app.schema.tab.request import CreateTabRequest, InviteRequest
-from app.schema.tab.response import TabInfo, TabDetailInfo, TabMember, TabInvitation, CreateTabResponse
+from app.schema.tab.response import TabInfo, TabDetailInfo, TabMember, TabInvitation, CreateTabResponse, TabGroupMember
 from app.service.tab import TabService
+from app.service.workspace_member import WorkspaceMemberService
 from app.core.security import verify_token_and_get_token_data
 from app.repository.workspace_member import QueryRepo as WorkspaceMemRepo
 from app.router.sse import send_sse_notification
+from uuid import UUID
 import asyncio
 
 router = APIRouter(prefix="/workspaces")
 service = TabService()
+wm_service = WorkspaceMemberService()
 
 # 탭 이름 중복 확인
 @router.get("/{workspace_id}/sections/{section_id}/tabs")
@@ -33,14 +36,17 @@ def create_tab(workspace_id: int, tab_data: CreateTabRequest, user_info: Dict = 
 @router.get("/{workspace_id}/tabs", response_model=List[TabInfo])
 def get_tabs(workspace_id: int, user_info: Dict = Depends(verify_token_and_get_token_data)):
     user_id = user_info.get("user_id")
+    user_name = wm_service.get_member_by_user_id(UUID(user_id).bytes)[0][2]
     rows = service.find_tabs(workspace_id, user_id)
-    return [TabInfo.from_row(row) for row in rows]
+    return [TabInfo.from_row(row, user_name) for row in rows]
 
 # 특정 탭 정보 상세 조회
 @router.get("/{workspace_id}/tabs/{tab_id}/info", response_model=TabDetailInfo)
-def get_tab(workspace_id: int, tab_id: int):
+def get_tab(workspace_id: int, tab_id: int, user_info: Dict = Depends(verify_token_and_get_token_data)):
+    user_id = user_info.get("user_id")
+    user_name = wm_service.get_member_by_user_id(UUID(user_id).bytes)[0][2]
     rows = service.find_tab(workspace_id, tab_id)
-    return TabDetailInfo.from_rows(rows)
+    return TabDetailInfo.from_rows(rows, user_name)
 
 # 탭 참여 인원 조회
 @router.get("/{workspace_id}/tabs/{tab_id}/members", response_model=List[TabMember])
@@ -71,22 +77,31 @@ async def invite_members(workspace_id: int, tab_id: int, user_ids: InviteRequest
 
     return TabInvitation.from_rows(rows)
 
-# 탭에 그룹 초대(미완)
-@router.post("/{workspace_id}/tabs/{tab_id}/groups/{group_id}")
+# 탭 참여 그룹 조회
+@router.get("/{workspace_id}/tabs/{tab_id}/groups", response_model=List[TabGroupMember])
+def participated_tab_groups(workspace_id: int, tab_id: int):
+    rows = service.get_tab_groups(workspace_id, tab_id)
+    return [TabGroupMember.from_row(row) for row in rows]
+
+# 탭 참여 가능 그룹 조회
+@router.get("/{workspace_id}/tabs/{tab_id}/non-groups", response_model=List[TabGroupMember])
+def available_tab_groups(workspace_id: int, tab_id: int):
+    rows = service.get_available_groups(workspace_id, tab_id)
+    return [TabGroupMember.from_row(row) for row in rows]
+
+# 탭에 그룹 초대
+@router.post("/{workspace_id}/tabs/{tab_id}/groups")
 async def invite_group_to_tab(
             workspace_id: int,
             tab_id: int,
-            group_id: int,
+            request: Request,
             user_info: Dict = Depends(verify_token_and_get_token_data),
 ):
-
-    #######################################################
-    # 추가 -> 현재 채팅 기능에 초대된 사람 추가.
-    # 고민해볼 것: 지금까지 대화내역들 초대된 사람한테도 보이게 할까?
-    # 이건 선택할 수 있을 듯.
-    #######################################################
-
-    return
+    data = await request.json()
+    user_id = user_info["user_id"]
+    group_ids: List[str] = data["group_ids"]
+    res = service.invite_groups(workspace_id, tab_id, group_ids, user_id)
+    return {"success_cnt": res[0], "group_names": res[1]}
 
 # 탭 나가기
 @router.patch("/{workspace_id}/tabs/{tab_id}/out")

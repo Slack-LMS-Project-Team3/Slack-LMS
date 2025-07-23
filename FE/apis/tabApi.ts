@@ -1,4 +1,6 @@
 import { fetchWithAuth } from "./authApi";
+import { Group, InviteGroups } from "./groupApi";
+export type { Group, InviteGroups };
 
 const BASE = process.env.NEXT_PUBLIC_BASE;
 
@@ -16,7 +18,7 @@ export interface Member {
   nickname: string;
   image?: string | null;
   role_id?: number;
-  role_name: string;
+  role_name?: string;
   group_id?: number[] | [];
   group_name?: string[] | [];
 }
@@ -157,5 +159,42 @@ export async function postMemberList(
     },
   );
   if (res == null || !res.ok) throw new Error("탭 참여 인원 추가 실패");
+  return res.json();
+}
+
+/* 탭 참여 그룹 조회 */
+export async function getTabGroupList(workspaceId: string, tabId: string): Promise<Group[]> {
+  const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/tabs/${tabId}/groups`,
+    {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    },
+  );
+  if (res == null || !res.ok) throw new Error("탭 참여 그룹 조회 실패");
+  return res.json();
+}
+
+/* 탭 참여 가능 그룹 조회 */
+export async function getPossibleGroupList(workspaceId: string, tabId: string): Promise<Group[]> {
+  const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/tabs/${tabId}/non-groups`,
+    {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    },
+  );
+  if (res == null || !res.ok) throw new Error("탭 참여 가능 그룹 조회 실패");
+  return res.json();
+}
+
+/* 탭 그룹 초대 */
+export async function postGroupList(workspaceId: string, tabId: string, groupIds: string[]): Promise<InviteGroups> {
+  const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/tabs/${tabId}/groups`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ group_ids: groupIds }),
+    },
+  );
+  if (res == null || !res.ok) throw new Error("탭 그룹 추가 실패");
   return res.json();
 }

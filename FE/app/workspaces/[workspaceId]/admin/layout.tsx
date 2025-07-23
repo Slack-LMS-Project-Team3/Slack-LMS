@@ -1,9 +1,9 @@
 "use client";
 
-import { AdminHeader } from "@/components/Administration/AdminHeader";
+import { AdminHeader } from "@/components/administration/AdminHeader";
 
 export default function AdminLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {

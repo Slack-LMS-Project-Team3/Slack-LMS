@@ -1,36 +1,137 @@
 "use client";
 
-import { Member } from "@/apis/tabApi";
-import { ReactNode } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Member, Group } from "@/apis/tabApi";
+import { ReactNode, useState, useEffect } from "react";
+import { TabMembersModal } from "./TabMembersModal";
+import { TabGroupsModal } from "./TabGroupsModal";
+import { PossibleMembersModal } from "./PossibleMembersModal";
+import { PossibleGroupsModal } from "./PossibleGroupsModal";
+import { getPossibleMemberList, getPossibleGroupList } from "@/apis/tabApi";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Users } from "lucide-react";
 
 interface MemberModalProps {
-  trigger?: ReactNode;
-  title?: string;
-  children: ReactNode;
-  defaultOpen?: boolean;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  possibleMembers?: Member[];
-  membersCount?: number;
+  workspaceId: string;
+  tabId: string;
+  title: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onInviteSuccess: () => void;
+  membersCount: number;
+  tabMembers: Member[];
+  tabGroups: Group[];
 }
 
-export function MemberModal({ trigger, title, children, defaultOpen = false, open, onOpenChange, membersCount }: MemberModalProps) {
+export function MemberModal({
+  workspaceId,
+  tabId,
+  title,
+  open,
+  onOpenChange,
+  onInviteSuccess,
+  membersCount,
+  tabMembers,
+  tabGroups,
+}: MemberModalProps) {
+  const [view, setView] = useState<"members" | "groups" | "add-members" | "add-groups">("members");
+
+  const [possibleMembers, setPossibleMembers] = useState<Member[]>([]);
+  const [possibleGroups, setPossibleGroups] = useState<Group[]>([]);
+
+  const handleAddMembersClick = () => {
+    getPossibleMemberList(workspaceId, tabId).then(setPossibleMembers);
+    setView("add-members");
+  };
+
+  const handleAddGroupsClick = () => {
+    getPossibleGroupList(workspaceId, tabId).then(setPossibleGroups);
+    setView("add-groups");
+  };
+
+  const handleBack = () => {
+    if (view === "add-members") setView("members");
+    if (view === "add-groups") setView("groups");
+  };  
+
+  const renderTitle = () => {
+    switch (view) {
+      case "members":
+      case "groups":
+        return title;
+      case "add-members":
+        return "Add Members";
+      case "add-groups":
+        return "Add Groups";
+    }
+  };
+
   return (
-    <Dialog defaultOpen={defaultOpen} open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="flex flex-col h-[70vh] w-[30vw] scrollbar-thin p-0 gap-0">
-        <DialogHeader className="flex flex-row items-end p-5 pr-15 gap-3">          
-          <DialogTitle className="text-xl font-semibold truncate">{title || "Invite to Tab"}</DialogTitle>          
-          <div className="flex flex-row items-center gap-1 pb-1">
-            <Users className="w-[13px] h-[13px] text-gray-600" />
-            <span className="text-normal text-gray-600 text-xs">{membersCount}</span>
-          </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="p-0 pt-2 gap-0 w-[30vw] max-w-md h-3/4 flex flex-col">
+        <DialogHeader className="p-4 flex flex-row items-center flex-none">
+          {(view === "add-members" || view === "add-groups") && (
+            <Button onClick={handleBack} variant="ghost" size="icon" className="mr-2">
+              <ChevronLeft />
+            </Button>
+          )}
+          <DialogTitle className="text-xl font-bold">{renderTitle()}</DialogTitle>
         </DialogHeader>
-        <Separator className="bg-gray-300" />
-        {children}
+
+        {(view === "members" || view === "groups") && (
+          <div className="flex-none">
+            <Tabs value={view} onValueChange={(value) => setView(value as any)} className="w-full">
+              <TabsList>
+                <TabsTrigger value="members" className="text-sm font-bold">
+                  Members ({membersCount})
+                </TabsTrigger>
+                <TabsTrigger value="groups" className="text-sm font-bold">
+                  Groups ({tabGroups.length})
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        )}
+        <Separator/>
+        <div className="flex-grow overflow-y-auto scrollbar-thin">
+          {view === "members" && (
+            <TabMembersModal tabMembers={tabMembers} onAddClick={handleAddMembersClick} />
+          )}
+          {view === "groups" && (
+            <TabGroupsModal tabGroups={tabGroups} onAddClick={handleAddGroupsClick} />
+          )}
+          {view === "add-members" && (
+            <PossibleMembersModal
+              workspaceId={workspaceId}
+              tabId={tabId}
+              possibleMembers={possibleMembers}
+              onBack={handleBack}
+              onInviteComplete={() => {
+                onOpenChange(false);
+                onInviteSuccess();
+              }}
+            />
+          )}
+          {view === "add-groups" && (
+            <PossibleGroupsModal
+              workspaceId={workspaceId}
+              tabId={tabId}
+              possibleGroups={possibleGroups}
+              onBack={handleBack}
+              onInviteComplete={() => {
+                onOpenChange(false);
+                onInviteSuccess();
+              }}
+            />
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

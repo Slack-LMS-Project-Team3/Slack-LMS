@@ -55,3 +55,10 @@ async def send_sse_notification(workspace_id: str, payload: dict):
     queues = subscribers.get(workspace_id, set())
     for queue in list(queues):
         await queue.put(payload)
+
+@router.post("/sse/notifications/{workspace_id}")
+async def asdf(workspace_id: str, request: Request):
+    print("\n\n\nin asdf")
+    payload = await request.json()
+    print(payload)
+    await send_sse_notification(workspace_id, payload)

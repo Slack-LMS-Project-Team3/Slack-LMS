@@ -22,6 +22,7 @@ class Message:
     deleted_at: Optional[datetime] = None
     update_type: MessageUpdateType = MessageUpdateType.MODIFY
     file_url: Optional[str] = None
+    like: Optional[int] = None
 
     @staticmethod
     def of(tab_id: int, sender_id: uuid.UUID, content: str, file_url: Optional[str]) -> Message:
@@ -54,3 +55,20 @@ class Message:
     def delete(self):
         self.deleted_at = datetime.now()
         self.update_type = MessageUpdateType.DELETE
+
+
+@dataclass
+class Emoji:
+    msg_id: Optional[int] = None
+    tab_id: Optional[int] = None
+    user_id: Optional[uuid.UUID] = None
+    emoji_type: str = None
+
+    @staticmethod
+    def of(tab_id: int, user_id: uuid.UUID, msg_id: int, type: str) -> Emoji:
+        return Emoji(
+            msg_id=msg_id,
+            tab_id=tab_id,
+            user_id=user_id,
+            emoji_type= type,
+        )

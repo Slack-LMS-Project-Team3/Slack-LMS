@@ -4,27 +4,36 @@ import { fetchWithAuth } from "./authApi";
 import { Member } from "./tabApi";
 
 export interface Group {
-  group_id: number;
-  group_name: string;
+  group_id?: number;
+  group_name?: string;
   members?: Member[];
   non_members?: Member[];
+  group_members_count?: number;  
+  user_names?: string[];
   role_id?: number;
   role_name?: string;  
 }
 
+export interface InviteGroups {
+  successCnt: number;
+  group_names: string[];
+}
+
 // 그룹 조회
 export const getGroups = async (workspaceId: string): Promise<Group[]> => {
-    // const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/roles`, {
-    //     method: "GET",
-    //     headers: { Accept: "application/json" },
-    // });
+    const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/groups`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+    });
 
-    // if (res && res.ok) {
-    //     return res.json();
-    // }
+    if (res && res.ok) {
+        return res.json();
+    } else {
+        throw new Error("그룹 조회에 실패했습니다.");
+    }
 
     /////////////////// 일단 더미 데이터 반환/////////////////////////
-    return getDummyGroups(workspaceId);
+    // return getDummyGroups(workspaceId);
 }
 
 // 더미 그룹 데이터 생성 함수
@@ -134,3 +143,52 @@ function getDummyGroups(workspaceId: string): Group[] {
 }
   
 
+// 그룹 생성
+export const createGroup = async (workspaceId: string, groupName: string): Promise<boolean> => {
+  const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/groups`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ group_name: groupName }),
+  });
+
+  if (res && res.ok) {
+      return true;
+  } else return false;
+}
+
+// 그룹명 변경
+export const updateGroupName = async (workspaceId: string, groupId: string, groupName: string): Promise<boolean> => {
+  const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/groups/${groupId}/title`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ group_name: groupName }),
+  });
+
+  if (res && res.ok) {
+      return true;
+  } else return false;
+}
+
+// 그룹 역할 변경
+export const updateGroupRole = async (workspaceId: string, groupId: string, roleId: string): Promise<boolean> => {
+  const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/groups/${groupId}/role`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role_id: roleId }),
+  });
+
+  if (res && res.ok) {
+      return true;
+  } else return false;  
+}
+
+// 그룹 삭제
+export const deleteGroup = async (workspaceId: string, groupId: string): Promise<boolean> => {
+  const res = await fetchWithAuth(`${BASE}/api/workspaces/${workspaceId}/groups/${groupId}`, {
+      method: "PATCH",
+  });
+
+  if (res && res.ok) {
+      return true;
+  } else return false;
+}

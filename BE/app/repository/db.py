@@ -1,4 +1,5 @@
 import os
+import sqlparse
 from app.util.database.abstract_query_repo import AbstractQueryRepo
 from app.util.database.db_factory import DBFactory
 
@@ -50,7 +51,11 @@ class DBRepository(AbstractQueryRepo):
             "DROP TABLE IF EXISTS workspace_members",
             "DROP TABLE IF EXISTS workspaces",
             "DROP TABLE IF EXISTS refresh_tokens",
-            "DROP TABLE IF EXISTS users"
+            "DROP TABLE IF EXISTS users",
+            "DROP TABLE IF EXISTS links",
+            "DROP TABLE IF EXISTS push_subscriptions",
+            "DROP TABLE IF EXISTS save_messages",
+            "DROP TABLE IF EXISTS emoji"
         ]
         
         for query in drop_queries:
@@ -62,24 +67,39 @@ class DBRepository(AbstractQueryRepo):
         
         with open(create_sql_path, 'r', encoding='utf-8') as file:
             sql_content = file.read()
+
+        # 더 정확한 SQL 분리
+        queries = []
+        current_query = ""
         
-        # 여러 쿼리를 분리해서 실행
-        queries = [query.strip() for query in sql_content.split(';') if query.strip()]
+        for line in sql_content.split('\n'):
+            line = line.strip()
+            if line and not line.startswith('--'):  # 주석 제외
+                current_query += line + " "
+                if line.endswith(';'):
+                    queries.append(current_query.strip())
+                    current_query = ""
+
         
         for query in queries:
             if query.strip():
+                print(f"Executing: {query[:100]}...")  # 디버깅용
                 self.execute(query)
     
     def _execute_insert_queries(self):
         """INSERT 쿼리들을 실행하는 함수 (seed 데이터)"""
         insert_sql_path = os.path.join(os.path.dirname(__file__), '../../sql/seed/dml_insert_seed.sql')
-        
         with open(insert_sql_path, 'r', encoding='utf-8') as file:
             sql_content = file.read()
-        
-        # 여러 쿼리를 분리해서 실행
-        queries = [query.strip() for query in sql_content.split(';') if query.strip()]
-        
-        for query in queries:
-            if query.strip():
-                self.execute(query)
+
+        # (선택) 주석 제거
+        cleaned = sqlparse.format(sql_content, strip_comments=True)
+
+        # 안전하게 쿼리별로 분리
+        statements = sqlparse.split(cleaned)
+
+        for stmt in statements:
+            stmt = stmt.strip()
+            print("stmt", stmt)
+            if stmt:
+                self.execute(stmt)

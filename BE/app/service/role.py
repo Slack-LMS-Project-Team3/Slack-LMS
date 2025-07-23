@@ -26,7 +26,8 @@ class RoleService:
         for user_data in data["users"]:
             email = user_data["email"]
             name = user_data["name"] 
-            role_name = user_data["role"]
+            # role_name = user_data["role"]
+            role_name = "Guest"
             
             # role_name으로 role_id 찾기
             if role_name in role_name_to_id:
@@ -49,14 +50,14 @@ class RoleService:
             logging.error(f"역할 목록 조회 서비스 오류 - workspace_id: {workspace_id}, error: {e}")
             raise InternalServerException("역할 목록을 조회하는 중 오류가 발생했습니다")
 
-    def find(self, workspace_id: int, role_id: int) -> Role:
+    def find(self, workspace_id: int, user_id: UUID.bytes) -> Role:
         try:
-            row = self.repo.find(workspace_id, role_id)
+            row = self.repo.find_by_user_id(workspace_id, user_id)
             return Role.from_row(row)
         except ValueError as e:
-            raise NotFoundException(f"역할을 찾을 수 없습니다 - role_id: {role_id}")
+            raise NotFoundException(f"역할을 찾을 수 없습니다 - user_id: {user_id}")
         except Exception as e:
-            logging.error(f"역할 조회 서비스 오류 - role_id: {role_id}, workspace_id: {workspace_id}, error: {e}")
+            logging.error(f"역할 조회 서비스 오류 - user_id: {user_id}, workspace_id: {workspace_id}, error: {e}")
             raise InternalServerException("역할을 조회하는 중 오류가 발생했습니다")
     
     def create(self, workspace_id: int, role_name: str, permissions: List) -> Role:        
@@ -86,7 +87,7 @@ class RoleService:
 
     def delete(self, workspace_id: int, role_id: int) -> None:
         try:
-            self.repo.delete(workspace_id, role_id)
+            return self.repo.delete(workspace_id, role_id)
         except ValueError as e:
             raise NotFoundException(f"삭제할 역할을 찾을 수 없습니다 - role_id: {role_id}")
         except Exception as e:

@@ -5,7 +5,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE;
 interface User {
   email: string;
   name: string;
-  role: string;
+  // role: string;
   group?: string;
   blog?: string;
   github?: string;

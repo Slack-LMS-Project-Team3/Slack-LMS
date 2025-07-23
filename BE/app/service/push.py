@@ -36,15 +36,19 @@ class PushService:
             )
         )
 
-    async def _send_to_subs(self, subs: List[Dict], data: Dict):
+    async def send_push_to(self, user_ids: List[str], data: Dict):
         tasks = []
-        for sub in subs:
-            if isinstance(sub, tuple):
-                endpoint, p256dh, auth = sub
+        for user_id in user_ids:
+            subs: List[Dict] = self.repo.find_user(uuid.UUID(user_id).bytes)
+            if subs == []:
+                continue
+
+            if isinstance(subs[0], tuple):
+                endpoint, p256dh, auth = subs[0]
             else:
-                endpoint = sub.get("endpoint")
-                p256dh = sub.get("p256dh")
-                auth = sub.get("auth")
+                endpoint = subs[0].get("endpoint")
+                p256dh = subs[0].get("p256dh")
+                auth = subs[0].get("auth")
 
             info = {
                 "endpoint": endpoint,
@@ -58,8 +62,3 @@ class PushService:
             except WebPushException as e:
                 print("Web push error:", repr(e))
         await asyncio.gather(*tasks, return_exceptions=True)
-
-    async def send_push_to(self, user_ids: List[str], data: Dict):
-        for user_id in user_ids:
-            subs: List[Dict] = self.repo.find_user(uuid.UUID(user_id).bytes)
-            await self._send_to_subs(subs, data)

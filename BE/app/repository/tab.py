@@ -2,6 +2,7 @@ from app.util.database.abstract_query_repo import AbstractQueryRepo
 from app.util.database.db_factory import DBFactory
 from uuid import UUID
 from typing import List, Optional
+from datetime import datetime
 
 is_dup_name_in_tab_by_section = """
 SELECT * FROM tabs
@@ -77,13 +78,13 @@ SELECT
     wm.nickname,
     wm.image, 
     MAX(r.name) AS role,
-    GROUP_CONCAT(DISTINCT g.name) AS groups
+    GROUP_CONCAT(DISTINCT g.name) AS `groups`
 FROM workspace_members wm
 LEFT JOIN tab_members tm ON wm.user_id = tm.user_id
 LEFT JOIN member_roles mr ON wm.user_id = mr.user_id
 LEFT JOIN roles r ON mr.role_id = r.id
 LEFT JOIN group_members gm ON wm.user_id = gm.user_id
-LEFT JOIN groups g ON gm.group_id = g.id
+LEFT JOIN `groups` g ON gm.group_id = g.id
 WHERE wm.workspace_id = %(workspace_id)s
   AND tm.tab_id = %(tab_id)s
   AND wm.deleted_at IS NULL
@@ -96,12 +97,12 @@ SELECT
     wm.nickname,
     wm.image, 
     r.name as role,
-    GROUP_CONCAT(DISTINCT g.name) as groups
+    GROUP_CONCAT(DISTINCT g.name) as `groups`
 FROM workspace_members wm
 LEFT JOIN member_roles mr ON wm.user_id = mr.user_id
 LEFT JOIN roles r ON mr.role_id = r.id
 LEFT JOIN group_members gm ON wm.user_id = gm.user_id
-LEFT JOIN groups g ON gm.group_id = g.id
+LEFT JOIN `groups` g ON gm.group_id = g.id
 WHERE wm.workspace_id = %(workspace_id)s
   AND wm.user_id NOT IN (
       SELECT user_id
@@ -110,6 +111,49 @@ WHERE wm.workspace_id = %(workspace_id)s
   )
   AND wm.deleted_at IS NULL
 GROUP BY wm.user_id, wm.nickname, wm.image, r.name;
+"""
+
+find_tab_groups = """
+SELECT
+  g.id, g.name
+FROM
+  group_members gm
+LEFT JOIN tab_members tm
+  ON gm.user_id = tm.user_id AND tm.tab_id = %(tab_id)s
+JOIN `groups` g ON g.id = gm.group_id
+GROUP BY
+  gm.group_id
+HAVING
+  COUNT(DISTINCT gm.user_id) = COUNT(DISTINCT tm.user_id);
+"""
+
+find_available_groups = """
+SELECT
+  g.id, g.name
+FROM
+  group_members gm
+LEFT JOIN tab_members tm
+  ON gm.user_id = tm.user_id AND tm.tab_id = %(tab_id)s
+JOIN `groups` g ON g.id = gm.group_id
+GROUP BY
+  gm.group_id
+HAVING
+  COUNT(DISTINCT gm.user_id) > COUNT(DISTINCT tm.user_id);
+"""
+
+find_groups_role_name = """
+SELECT
+  r.name
+FROM
+  roles r
+JOIN member_roles mr ON r.id = mr.role_id
+JOIN group_members gm ON mr.user_id = gm.user_id
+WHERE gm.group_id = %(group_id)s;
+"""
+
+count_group_members = """
+SELECT COUNT(*) FROM group_members
+WHERE group_id = %(group_id)s;
 """
 
 insert_tab = """
@@ -122,6 +166,45 @@ INSERT INTO tab_members (workspace_id, user_id, tab_id, user_name)
 SELECT %(workspace_id)s, %(user_id)s, %(tab_id)s, wm.nickname
 FROM workspace_members wm
 WHERE wm.user_id = %(user_id)s AND wm.workspace_id = %(workspace_id)s;
+"""
+
+insert_tab_group_members = """
+INSERT INTO tab_members (workspace_id, tab_id, user_id, user_name)
+SELECT
+  %(workspace_id)s AS workspace_id,
+  %(tab_id)s AS tab_id,
+  gm.user_id,
+  gm.user_name
+FROM
+  group_members gm
+LEFT JOIN tab_members tm
+  ON tm.workspace_id = %(workspace_id)s
+  AND tm.tab_id = %(tab_id)s
+  AND tm.user_id = gm.user_id
+WHERE
+  gm.group_id = %(group_id)s
+  AND tm.id IS NULL;
+"""
+
+find_group_name_by_id = """
+SELECT name FROM `groups`
+WHERE id = %(group_id)s
+  AND deleted_at IS NULL;
+"""
+
+insert_first_message = """
+INSERT INTO messages (tab_id, sender_id, content, sender_name, workspace_id)
+SELECT
+  %(tab_id)s AS tab_id,
+  %(user_id)s AS sender_id,
+  %(content)s AS content,  
+  wm.nickname As sender_name,
+  %(workspace_id)s AS workspace_id
+FROM
+  workspace_members wm
+WHERE
+  wm.user_id = %(user_id)s
+  AND deleted_at IS NULL;
 """
 
 # 미완
@@ -152,6 +235,13 @@ SELECT * FROM tabs WHERE id = %(id)s;
 
 find_tab_member_by_user_id = """
 SELECT * FROM tab_members WHERE user_id = %(user_id)s;
+"""
+
+update_tab_name = """
+UPDATE tabs SET name = %(tab_name)s,
+                updated_at = %(updated_at)s
+WHERE workspace_id = %(workspace_id)s 
+  AND id = %(tab_id)s;
 """
 
 class TabRepository(AbstractQueryRepo):
@@ -225,6 +315,66 @@ class TabRepository(AbstractQueryRepo):
             "tab_id": tab_id
         }
         return self.execute(find_non_members, param)
+    
+    def find_tab_groups(self, workspace_id: int, tab_id: int):
+        param = {
+            "workspace_id": workspace_id,
+            "tab_id": tab_id
+        }
+        res = self.execute(find_tab_groups, param)
+        for i in range(0, len(res)):
+            res[i] = list(res[i])
+            group_id = {"group_id":res[i][0]}
+            res_role_names = self.execute(find_groups_role_name, group_id)
+            role_names = []
+            for role_name in res_role_names:
+                role_names.append(role_name[0])
+            if len(set(role_names)) == 1:
+                res[i].append(role_names[0])
+            else:
+                res[i].append("MIXED")
+            count = self.execute(count_group_members, group_id)
+            res[i].append(count[0][0])
+        return res
+    
+    def find_available_groups(self, workspace_id: int, tab_id: int):
+        param = {
+            "workspace_id": workspace_id,
+            "tab_id": tab_id
+        }
+        res = self.execute(find_available_groups, param)
+        for i in range(0, len(res)):
+            res[i] = list(res[i])
+            group_id = {"group_id":res[i][0]}
+            res_role_names = self.execute(find_groups_role_name, group_id)
+            role_names = []
+            for role_name in res_role_names:
+                role_names.append(role_name[0])
+            if len(set(role_names)) == 1:
+                res[i].append(role_names[0])
+            else:
+                res[i].append("MIXED")
+            count = self.execute(count_group_members, group_id)
+            res[i].append(count[0][0])
+        return res
+    
+    # 미완
+    def insert_group_members(self, workspace_id: int, tab_id: int, group_ids: List[str], user_id: str):
+        res = 0
+        group_names = []
+        for group_id in group_ids:
+          params = {
+              "workspace_id": workspace_id,
+              "tab_id": tab_id,
+              "group_id": int(group_id)
+          }
+          r = self.execute(insert_tab_group_members, params)
+          # group 이름 찾아와서 반환하고,
+          g_name_data = self.execute(find_group_name_by_id, params)
+          group_names.append(g_name_data[0][0])
+          res += r["rowcount"]
+
+        return [res, group_names]
 
     def insert_members(self, workspace_id: int, tab_id: int, user_ids: List[str]):
         for user_id in user_ids:
@@ -257,3 +407,12 @@ class TabRepository(AbstractQueryRepo):
             "user_id": user_id
         }
         return self.db.execute(find_tab_member_by_user_id, param)
+    
+    def update_tab_name(self, workspace_id: int, tab_id: int, tab_name: str):
+        param = {
+            "workspace_id": workspace_id,
+            "tab_id": tab_id,
+            "tab_name": tab_name,
+            "updated_at": datetime.now()
+        }
+        self.db.execute(update_tab_name, param)

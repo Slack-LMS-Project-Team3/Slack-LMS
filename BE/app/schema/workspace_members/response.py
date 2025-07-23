@@ -7,8 +7,8 @@ class WorkspaceMemberSchema(BaseModel):
     nickname: str
     email: EmailStr
     image: Optional[str] = None
-    role: Optional[str] = None
-    groups: Optional[List[str]] = None
+    role_name: Optional[str] = None
+    group_name: Optional[List[str]] = None
     github: Optional[str] = None
     blog: Optional[str] = None
 
@@ -20,8 +20,8 @@ class WorkspaceMemberSchema(BaseModel):
             nickname=row[2],
             email=row[3],
             image=row[4],
-            role=row[5],
-            groups=row[6].split(',') if isinstance(row[6], str) else [],
+            role_name=row[5],
+            group_name=row[6].split(',') if isinstance(row[6], str) else [],
             github=row[7],
             blog=row[8]
         )

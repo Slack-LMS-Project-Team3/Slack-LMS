@@ -12,7 +12,7 @@ function Tabs({
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
-      className={cn("flex flex-col gap-2", className)}
+      className={cn("flex flex-col gap-0", className)}
       {...props}
     />
   )
@@ -26,7 +26,7 @@ function TabsList({
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+        "flex flex-row items-center gap-0 ml-4",
         className
       )}
       {...props}
@@ -42,7 +42,10 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex flex-fit items-center p-[6px] px-[10px] cursor-pointer hover:bg-[#F4F4F4] hover:rounded-t-md",
+        "data-[state=active]:bg-[#F4F4F4] data-[state=active]:rounded-t-md data-[state=active]:border-b-2 data-[state=active]:border-black",
+        "[&_svg]:w-[16px] [&_svg]:mr-[4px]",
+        "[&_p]:text-center [&_p]:text-s-bold",
         className
       )}
       {...props}

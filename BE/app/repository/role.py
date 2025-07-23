@@ -11,15 +11,47 @@ select id, name from roles;
 """
 
 select_all_roles = """
-SELECT * FROM roles 
+SELECT * FROM roles
 WHERE workspace_id = %(workspace_id)s
   AND deleted_at IS NULL;
+"""
+
+select_all_member_roles = """
+SELECT wm.nickname FROM member_roles mr
+JOIN workspace_members wm ON wm.user_id = mr.user_id
+JOIN group_members gm ON gm.user_id = mr.user_id
+JOIN `groups` g ON g.id = gm.group_id
+WHERE wm.workspace_id = %(workspace_id)s
+  AND mr.role_id = %(role_id)s
+  AND wm.deleted_at IS NULL;
+"""
+
+select_specific_group_name = """
+SELECT
+  g.name
+FROM
+  group_members gm
+JOIN `groups` g ON g.id = gm.group_id
+LEFT JOIN member_roles mr
+  ON gm.user_id = mr.user_id AND mr.role_id = %(role_id)s
+GROUP BY
+  gm.group_id
+HAVING
+  COUNT(DISTINCT gm.user_id) = COUNT(DISTINCT mr.user_id);
 """
 
 select_role_by_id = """
 SELECT * FROM roles
 WHERE id = %(id)s 
   AND workspace_id = %(workspace_id)s
+  AND deleted_at IS NULL;
+"""
+
+select_role_by_user_id = """
+SELECT r.* FROM roles r
+JOIN member_roles mr ON r.id = mr.role_id
+WHERE mr.user_id = %(user_id)s 
+  AND r.workspace_id = %(workspace_id)s
   AND deleted_at IS NULL;
 """
 
@@ -79,6 +111,19 @@ WHERE r.workspace_id = %(workspace_id)s
   AND mr.user_id = %(user_id)s;
 """
 
+insert_member_roles = """
+INSERT INTO member_roles (
+    user_id,
+    user_name,
+    role_id
+)
+VALUE (
+    %(user_id)s,
+    %(user_name)s,
+    %(role_id)s
+);
+"""
+
 bulk_insert_member_roles = """
 INSERT INTO member_roles (
     user_id, role_id, user_name
@@ -107,10 +152,38 @@ class QueryRepo(AbstractQueryRepo):
 
     def bulk_insert_member_roles(self, member_roles_list: list):
         return self.db.execute_many(bulk_insert_member_roles, member_roles_list)
+
+    def insert_member_roles(self, data: dict):
+        params = {
+            "user_id": data["user_id"],
+            "user_name": data["nickname"],
+            "role_name": data["role"]
+        }
+        return self.db.execute(insert_member_roles, params)
     
+    # 수정해야함
     def find_all(self, workspace_id: int):
         try:
             result = self.db.execute(select_all_roles, {"workspace_id": workspace_id})
+            for i in range(0, len(result)):
+                result[i] = list(result[i])
+                user_names = []
+                group_names=[]
+                params = {
+                    "workspace_id": workspace_id,
+                    "role_id": result[i][0]
+                }
+                user_names_data = self.db.execute(select_all_member_roles, params)
+                for name in user_names_data:
+                    user_names.append(name[0])
+                result[i].append(list(set(user_names)))
+                group_names_data = self.db.execute(select_specific_group_name, params)                
+                for group in group_names_data:
+                    group_names.append(group[0])
+                result[i].append(group_names)
+                # for result[i][]
+                print("\n\nfind_all, result: ", result)
+
             return result if result else []
         except Exception as e:
             logging.error(f"역할 목록 조회 실패 - workspace_id: {workspace_id}, error: {e}")
@@ -124,12 +197,28 @@ class QueryRepo(AbstractQueryRepo):
         try:
             result = self.db.execute(select_role_by_id, param)
             if not result:
-                raise ValueError(f"역할을 찾을 수 없습니다 - role_id: {role_id}, workspace_id: {workspace_id}")
+                raise ValueError(f"역할을 찾을 수 없습니다 - user_id: {role_id}, workspace_id: {workspace_id}")
             return result[0]
         except ValueError:
             raise
         except Exception as e:
             logging.error(f"역할 조회 실패 - role_id: {role_id}, workspace_id: {workspace_id}, error: {e}")
+            raise Exception(f"역할을 조회할 수 없습니다: {e}")
+
+    def find_by_user_id(self, workspace_id: int, user_id: UUID.bytes) -> Optional[tuple]:
+        param = {
+            "workspace_id": workspace_id,
+            "user_id": user_id
+        }
+        try:
+            result = self.db.execute(select_role_by_user_id, param)
+            if not result:
+                raise ValueError(f"역할을 찾을 수 없습니다 - user_id: {user_id}, workspace_id: {workspace_id}")
+            return result[0]
+        except ValueError:
+            raise
+        except Exception as e:
+            logging.error(f"역할 조회 실패 - role_id: {user_id}, workspace_id: {workspace_id}, error: {e}")
             raise Exception(f"역할을 조회할 수 없습니다: {e}")
 
     def find_by_name(self, workspace_id: int, role_name: str) -> Optional[tuple]:

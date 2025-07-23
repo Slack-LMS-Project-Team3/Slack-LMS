@@ -46,10 +46,10 @@ class WorkspaceMemberService:
         group_service.insert_group_member(data, insert_groups)
 
         # 역할 생성
-        role_service.insert_member_roles_bulk(data)
+        created_roles = role_service.insert_member_roles_bulk(data)
 
         return {
-        "success_count": len(data["users"])
+        "success_count": created_roles
     }
 
     def insert_workspace_member(self, data: dict, workspace_id: int):
@@ -65,8 +65,12 @@ class WorkspaceMemberService:
             })
         workspace_member = self.workspace_member_repo.bulk_insert_workspace_member(workspace_member_list)
         return workspace_member
-    # test
-    
+
+    def get_member_by_user_id_simple(self, id: UUID | bytes, workspace_id: int):
+        user_id_bytes = id.bytes if isinstance(id, UUID) else id  
+        workspace_member = self.workspace_member_repo.find_by_user_id_simple(user_id_bytes, workspace_id)
+        return workspace_member    
+
     def get_member_by_user_id(self, id: UUID | bytes) -> WorkspaceMember:
         user_id_bytes = id.bytes if isinstance(id, UUID) else id  
         workspace_member = self.workspace_member_repo.find_by_user_id(user_id_bytes)
@@ -84,16 +88,31 @@ class WorkspaceMemberService:
         workspace_columns = self.workspace_member_repo.find_by_workspace_columns()
         return workspace_columns
   
-    def get_member_by_workspace_id(self, workspace_id: int) -> List[tuple]:
+    def get_member_by_workspace_id(self, workspace_id: int) -> List[list]:
         members_infos = self.workspace_member_repo.find_by_user_workspace_id(workspace_id)
         return members_infos
 
-    def update_profile_by_user_id(self, user_id: UUID, payload: UpdateWorkspaceMemberRequest) -> WorkspaceMemberResponse:
+    def update_profile_by_user_id(self, workspace_id: int, user_id: UUID, payload: UpdateWorkspaceMemberRequest) -> WorkspaceMemberResponse:
         user_id_bytes = user_id.bytes  # BINARY(16)에 맞게 변환
+
+        # user_id로 찾은 모든 dm 방에서 user_id에 대한 이름 변경
+        tab_infos = tab_service.find_tabs(workspace_id, str(user_id))
+        for tab_info in tab_infos:
+            section_id = tab_info[2]
+            if section_id == 4: # dm에 인원 초대 시 tab_name 변경
+                tab_id = tab_info[0]
+                tab_name = tab_info[1].split(", ") 
+                user_name = self.get_member_by_user_id(user_id_bytes)[0][2]
+                tab_name.remove(user_name) # 변경 전 이름 삭제
+                tab_name.append(payload.nickname) # 변경된 이름 추가
+                tab_name = ", ".join(tab_name)
+                tab_service.modify_name(workspace_id, tab_id, tab_name)
+
         # 업데이트 쿼리는 영향받은 행 수만 반환하므로, 업데이트 후 다시 조회하여 데이터 반환
-        self.workspace_member_repo.update(user_id_bytes, payload)
+        self.workspace_member_repo.update(workspace_id, user_id_bytes, payload)
         updated_rows = self.workspace_member_repo.find_by_user_id(user_id_bytes)
         updated_member = WorkspaceMemberSchema.from_row(updated_rows[0])
+
         return WorkspaceMemberResponse(workspace_member=updated_member)
     
     # 미완
@@ -117,3 +136,69 @@ class WorkspaceMemberService:
         res_mem_roles = role_service.delete_member_roles(user_id, workspace_id)
         res_grp_mem = group_service.delete_grp_mem_by_ws_id(user_id, workspace_id)
         return res_grp_mem and res_mem_roles
+    
+    
+    def search_members(self, workspace_id: int, keyword: str) -> List[tuple]:
+        rows = self.workspace_member_repo.search_members(workspace_id, keyword)
+        return rows
+    # 회원 등록(개별) - 미완
+    def register_single(self, workspace_id, data: dict) -> dict:
+        user_name = data["nickname"]
+        email = data["email"]
+        role_id = int(data["role_id"])
+        group_id = data["group_id"]
+
+        # users에 없으면 추가, 있으면 패스
+        res_users = user_service.find_user_by_email(email)
+        try:
+            user_id = res_users[0][0]
+        except:
+            if (not res_users):
+                # id, name, email, provider, workspace_id
+                params = {
+                    "id": uuid4().bytes,
+                    "name": user_name,
+                    "email": email,
+                    "provider": "google",
+                    "workspace_id": workspace_id
+                }
+                user_service.create_user_in_usertable(params)
+                user_id = user_service.find_user_by_email(email)
+        
+        # workspace_members에 없으면 추가, 있으면 패스
+        res_wm = self.get_member_by_user_id(user_id)
+        if (not res_wm):
+            # id, name, email, provider, workspace_id
+            params = {
+                "id": uuid4().bytes,
+                "user_id": user_id,
+                "email": email,
+                "nickname": user_name,
+                "workspace_id": workspace_id
+            }
+            self.insert_workspace_member(params)
+
+        # workspace의 기본 탭, tab_members에 추가.(tab_id = 1)
+
+        # group_members 추가
+        params = {
+            "user_id": user_id,
+            "group_id": data["group_id"],
+            "user_name": user_name
+        }
+        group_service.insert_member_by_group_id()
+        # member_roles 추가
+        params = {
+            "user_id": user_id,
+            "user_name": user_name,
+            "role_id": role_id
+        }
+        role_service.insert_member_roles(params)
+
+        return 
+
+    def get_user_workspaces(self, user_id: str, workspace_id: str) -> List[WorkspaceMember]:
+        print("get_user_workspaces user_id", user_id)
+        workspaces = self.workspace_member_repo.find_by_user_all_workspace_id(user_id, workspace_id)
+        print("get_user_workspaces workspaces", workspaces)
+        return workspaces

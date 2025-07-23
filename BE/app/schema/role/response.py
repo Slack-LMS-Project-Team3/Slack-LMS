@@ -6,14 +6,18 @@ from app.domain.role import Role
 
 
 class RoleResponse(BaseModel):
-    id: int
-    name: str
+    role_id: int
+    role_name: str
+    user_names: list[str] | None
+    group_names: list[str] | None
     permissions: List[str]
     
     @staticmethod
     def from_domain(role: Role) -> RoleResponse:
         return RoleResponse(
-            id = role.id,
-            name = role.name,
+            role_id = role.id,
+            role_name = role.name,
+            user_names = role.user_names,
+            group_names = role.group_names,
             permissions=[p.value for p in role.permissions]
         )

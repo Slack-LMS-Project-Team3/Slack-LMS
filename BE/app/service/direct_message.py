@@ -26,3 +26,8 @@ class DMService:
         # user_id (bytes)를 다시 string으로 변환하여 딕셔너리 생성
         member_map = {UUID(bytes=row[0]).hex: row[1] for row in rows}
         return member_map
+    
+    # dm 방에 존재하는 사람들 userid 챙겨오기.
+    def find_member_id(self, user_ids: List) -> Dict[str, str]:
+        rows = self.repo.find_member_user_id(user_ids)
+        return rows

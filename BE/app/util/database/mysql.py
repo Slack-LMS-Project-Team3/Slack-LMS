@@ -90,8 +90,13 @@ class MySQL(DBImpl):
             cursor = cnx.cursor()
             cursor.executemany(query, bind_value)
             cnx.commit()
-            result = cursor.fetchall()
-            return result
+            
+            # INSERT IGNORE의 경우 삽입된 행의 개수를 반환
+            if query.strip().split()[0].lower() == "insert":
+                return cursor.rowcount
+            else:
+                result = cursor.fetchall()
+                return result
         except MySQLError as e:
             if cnx:
                 try:

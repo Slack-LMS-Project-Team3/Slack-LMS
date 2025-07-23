@@ -10,14 +10,11 @@ export function useFetchMessages(workspaceId: string, tabId: string) {
       const res = await getMessages(workspaceId, tabId);
       //   setMessages(res.messages); // 서버 응답 구조에 따라
       const messages = res.messages.map((msg: any) => ({
-        senderId: msg.sender_id,
-        msgId: msg.msg_id,
-        nickname: msg.nickname,
-        content: msg.content,
-        image: msg.image,
-        createdAt: msg.created_at,
-        isUpdated: msg.is_updated,
-        fileUrl: msg.file_url,
+        senderId: msg.sender_id, msgId: msg.msg_id, nickname: msg.nickname,
+        content: msg.content, image: msg.image, createdAt: msg.created_at,
+        isUpdated: msg.is_updated, fileUrl: msg.file_url, checkCnt: msg.e_check_cnt,
+        clapCnt: msg.e_clap_cnt, likeCnt: msg.e_like_cnt, sparkleCnt: msg.e_sparkle_cnt,
+        prayCnt: msg.e_pray_cnt, myToggle: msg.my_toggle
       }));
       setMessages(messages);
     }

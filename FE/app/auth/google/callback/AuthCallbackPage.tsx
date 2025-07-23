@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useMyUserStore } from "@/store/myUserStore";
+import { useMyPermissionsStore } from "@/store/myPermissionsStore";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -19,6 +20,9 @@ export default function AuthCallbackPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // 권한 정보 호출 및 전역 상태로 저장
+  const { fetchPermissions } = useMyPermissionsStore();
 
   useEffect(() => {
     if (!code) {
@@ -32,7 +36,7 @@ export default function AuthCallbackPage() {
         const res = await fetch(
           `${BASE}/api/auth/google/callback?code=${code}&scope=${scope}&prompt=${prompt}`,
           {
-            credentials: "omit", // refresh_token 받을 때 필요
+            credentials: "include",
           },
         );
         if (errorParam) {
@@ -64,6 +68,9 @@ export default function AuthCallbackPage() {
         // 토큰에서 사용자 ID 추출하여 스토어에 저장
         const decoded = jwtDecode<{ user_id: string }>(accessToken);
         useMyUserStore.getState().setUserId(decoded.user_id);
+
+        // 권한 정보 호출 및 전역 상태로 저장
+        await fetchPermissions(workspaceId);
 
         router.replace(`/workspaces/${workspaceId}/tabs/${tabId}`);
       } catch (err: any) {

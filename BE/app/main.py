@@ -25,8 +25,12 @@ from app.router import push
 from app.router import notification
 from app.router import db
 from app.router import role
+from app.router import group
+from app.router import links
 from app.router import sse  # SSE
 from app.router import notion
+from app.router import save_message
+
 
 load_dotenv()
 
@@ -46,12 +50,8 @@ app.include_router(router=auth.router, prefix="/api")
 app.include_router(router=s3.router, prefix="/api")
 app.include_router(router=push.router, prefix="/api")
 app.include_router(router=notification.router, prefix="/api")
-<<<<<<< Updated upstream
-
-=======
 app.include_router(router=group.router, prefix="/api")
 app.include_router(router=links.router, prefix="/api")
->>>>>>> Stashed changes
 app.include_router(router=workspace_members.router, prefix="/api")
 app.include_router(router=tab.router, prefix="/api")
 app.include_router(router=workspace.router, prefix="/api")
@@ -60,6 +60,8 @@ app.include_router(router=db.router, prefix="/api")
 app.include_router(router=role.router, prefix="/api")
 app.include_router(router=sse.router, prefix="/api")
 app.include_router(router=notion.router, prefix="/api")
+app.include_router(router=save_message.router, prefix="/api")
+
 
 # 예외 핸들러 등록
 app.add_exception_handler(CustomHTTPException, custom_http_exception_handler)

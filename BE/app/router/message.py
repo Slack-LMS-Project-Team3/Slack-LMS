@@ -24,17 +24,16 @@ workspace_member_service = WorkspaceMemberService()
 
 
 @router.get("/workspaces/{workspace_id}/tabs/{tab_id}/messages", response_model=MessagesResponse)
-async def find_all_messages(workspace_id: int, tab_id: int, before_id: int = Query(None)) -> MessagesResponse:
-    
+async def find_all_messages(workspace_id: int, tab_id: int, before_id: int = Query(None), token_data: dict = Depends(verify_token_and_get_token_data)) -> MessagesResponse:
+    current_user_id = token_data["user_id"]
     # 디버깅용. 한번 싹 지우고 다시 하고 싶을때 쓰면 됨.
     # MessageService.delete_all_message(message_service)
     print("************ in find all messages **************")
     print("tab_id, before_id: ", tab_id, before_id)
     # 페이징 위해 교체 로직
-    rows = await message_service.find_recent_messages(tab_id, before_id)
+    rows = await message_service.find_recent_messages(tab_id, before_id, current_user_id)
     rows.reverse()
     
-    # 뒤집힌 rows
     # [0]: m.id
     # [1]: m.tab_id
     # [2]: m.sender_id
@@ -46,6 +45,16 @@ async def find_all_messages(workspace_id: int, tab_id: int, before_id: int = Que
     # [8]: m.updated_at
     # [9]: m.deleted_at
     # [10]: m.url
+    # [11]: m.check_cnt
+    # [12]: m.clap_cnt
+    # [13]: m.like_cnt
+    # [14]: m.pray_cnt,
+    # [15]: m.sparkle_cnt,
+    # [16]: e.e_check,
+    # [17]: e.e_clap,
+    # [18]: e.e_like,
+    # [19]: e.e_pray,
+    # [20]: e.e_sparkle
     
     # 원래 로직
     messages = [MessageSchema.from_row(row) for row in rows]
@@ -91,4 +100,10 @@ async def delete_message(
 
     await message_service.delete_message(message_id, current_user_id)  # user_id 추가
     await connection.broadcast(workspace_id, tab_id, data)
-
+    
+#검색
+@router.get("/workspaces/{workspace_id}/tabs/{tab_id}/messages/search", response_model=MessagesResponse)
+async def search_messages(workspace_id: int, tab_id: int, q: str = Query(...)) -> MessagesResponse:
+    rows = await message_service.search_messages(tab_id, q)
+    messages = [MessageSchema.from_row(row) for row in rows]
+    return MessagesResponse(messages=messages)

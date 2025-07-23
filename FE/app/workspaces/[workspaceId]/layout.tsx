@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -23,8 +23,15 @@ export default function WorkspaceIdLayout({
   const router = useRouter();
   const profilePanelRef = useRef<ImperativePanelHandle>(null);
 
+  // 패널 크기 상태 관리
+  const [sidebarSize, setSidebarSize] = useState(20);
+  const [profileSize, setProfileSize] = useState(20);
+
   // 프로필 표시를 위한 state 구독
   const { isOpen, setClose } = useProfileStore();
+
+  // children 크기 동적 계산: 100 - sidebar - (profile이 열려있으면 profile, 아니면 0)
+  const childrenSize = 100 - sidebarSize - (isOpen ? profileSize : 0);
 
   // 진입 시 Access 토큰 확인
   useEffect(() => {
@@ -51,29 +58,42 @@ export default function WorkspaceIdLayout({
   };
 
   return (
-    <div className="flex flex-1 min-h-0">
-      <div className="flex flex-1 flex-row min-h-0 w-full">
-        <ResizablePanelGroup key="workspace-layout-group" direction="horizontal" className="flex-1 min-h-0">
-          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
-            <aside className="h-full">{sidebar}</aside>
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={60} minSize={30}>
-            <main className="h-full">{children}</main>
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel
-            ref={profilePanelRef}
-            collapsible
-            onCollapse={onCollapse}
-            defaultSize={20}
-            collapsedSize={0}
-            minSize={15}
+    <div className="flex w-full min-h-0">
+      <div className="flex flex-row min-h-0 w-lvw">
+        <ResizablePanelGroup key="workspace-layout-group" direction="horizontal">
+          <ResizablePanel 
+            defaultSize={sidebarSize} 
+            minSize={15} 
             maxSize={30}
-            className="shadow-lg"
+            onResize={(size) => setSidebarSize(size)}
           >
-            <aside className="h-full">{profile}</aside>
+            <aside className="h-full w-full">{sidebar}</aside>
           </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel 
+            defaultSize={childrenSize} 
+            minSize={30}
+          >
+            <main className="h-full w-full">{children}</main>
+          </ResizablePanel>
+          {isOpen && (
+            <>
+              <ResizableHandle />
+              <ResizablePanel
+                ref={profilePanelRef}
+                collapsible
+                onCollapse={onCollapse}
+                defaultSize={profileSize}
+                collapsedSize={0}
+                minSize={15}
+                maxSize={30}
+                onResize={(size) => setProfileSize(size)}
+                className="shadow-lg"
+              >
+                <aside className="h-full w-full">{profile}</aside>
+              </ResizablePanel>
+            </>
+          )}
         </ResizablePanelGroup>
       </div>
     </div>

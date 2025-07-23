@@ -22,11 +22,11 @@ const Stars: React.FC<{ count?: number }> = ({ count = 100 }) => {
   const stars: Star[] = useMemo(() => {
     return Array.from({ length: count }).map((_, i) => ({
       id: i,
-      size: Math.random() * 1.5 + 0.5, // 0.5 ~ 2px
+      size: Math.random() * 1 + 1, // 1 ~ 2px
       top: Math.random() * 100, // 0% ~ 100%
       left: Math.random() * 100,
-      delay: Math.random() * 4, // 0s ~ 4s
-      duration: Math.random() * 4 + 2, // 2s ~ 6s
+      delay: Math.random() * 1, // 0s ~ 1s
+      duration: Math.random() * 1 + 1, // 1s ~ 2s
     }));
   }, [count]);
 
@@ -88,12 +88,12 @@ export default function Page() {
       <Stars count={150} />
 
       {/* 로고 */}
-      <div className="justify-center gap-10 relative z-10 p-8 bg-black backdrop-blur-md rounded-2xl flex flex-col items-center w-[30%] mt-15">
+      <div className="justify-center gap-10 z-10 p-8 bg-black backdrop-blur-md rounded-2xl flex flex-col items-center w-[30%] mt-15">
         <div className="flex flex-row items-center mb-15">
-          <img src="./logo.png" alt="SLAM Logo" className="w-15 h-15" />
-          <h1 className="ml-3 zen-antique-soft-regular text-5xl font-extrabold text-white text-center tracking-[0.4rem]">
+          <img src="/logo.png" alt="SLAM Logo" className="w-15 h-15" />
+          <h1 className="ml-3 kaisei-harunoumi-bold text-5xl font-extrabold text-white text-center tracking-[0.5rem] whitespace-nowrap">
             Polaris
-            <span className="relative ml-1 -translate-y-7 inline-block text-blue-200">
+            <span className="ml-1 -translate-y-8 inline-block text-blue-200">
               .
             </span>
           </h1>

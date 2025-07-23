@@ -11,14 +11,14 @@ export function LoginButton() {
     <div>
       <Button
         variant="outline"
-        className="flex border-1 border-gray-400 bg-background/1 text-white max-w-min py-7 px-10 cursor-pointer hover:bg-gray-800 hover:text-gray-200"
+        className="flex border-1 border-gray-400 bg-background/1 text-white max-w-min py-6 px-8 cursor-pointer hover:bg-gray-800 hover:text-gray-200"
       >
         <Link
           className="flex flex-row justify-center items-center gap-2 p-2"
           href={`${BASE}/api/auth/google`}
         >
           <img src="./googleLogo.png" className="flex w-6" alt="Google Logo" />
-          <span className="text-lg">Google 로그인</span>
+          <span className="text-lg text-gray-300">Google 로그인</span>
         </Link>
       </Button>
     </div>

@@ -1,39 +1,26 @@
 "use client";
 
-import TipTap from "@/components/chat-text-area/tiptap";
-import { useChannelStore } from "@/store/channelStore";
-import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatPage } from "@/components/chat/ChatPage";
+import TipTap from "@/components/chat-text-area/tiptap";
 import { useParams } from "next/navigation";
 
-
 export default function ChannelDefault() {
-  const { channelWidth } = useChannelStore();
+  // 파라미터에서 workspaceId와 tabId 추출
   const params = useParams();
   const workspaceId = params.workspaceId as string;
   const tabId = params.tabId as string;
-
-
-
+  
   return (
-    <div className="flex flex-col h-full">
-      {/* 1. 상단 헤더 */}
-      <ChatHeader />
-
-      {/* 2. 엑셀 업로드 버튼 : 추후 위치 수정 */}
-      {/* <div className="flex-none">
-        <ExUpload />
-      </div> */}
-
-      {/* 3. 채팅 리스트 + 입력창 */}
-      <div className="flex-1 flex flex-col min-h-0">
-        {/* 3-1. 채팅 리스트 */}
+    <div className="flex flex-col w-full">
+      {/* 채팅 리스트 - 고정 높이를 제외한 나머지 영역 차지, 스크롤 가능 */}
+      <div className="flex flex-col w-full h-full overflow-y-auto scrollbar-thin">
         <ChatPage workspaceId={workspaceId} tabId={tabId} />
+      </div>
 
-        {/* 3-2. 입력창 */}
-        <div className="flex-none mb-5 mx-5">
-          <TipTap />
-        </div>
+
+      {/* 입력창 - 고정된 높이로 설정 */}
+      <div className="flex-none mx-5 mb-3">
+        <TipTap />
       </div>
     </div>
   );

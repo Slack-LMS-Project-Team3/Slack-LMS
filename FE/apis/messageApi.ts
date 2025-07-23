@@ -119,3 +119,13 @@ export async function sendDirectMessage(
   if (!res.ok) throw new Error("DM 생성 실패");
   return res.json();
 }
+
+
+export const searchMessages = async (
+  workspaceId: string,
+  tabId: string,
+  keyword: string,
+) => {
+  const url = `${BASE}/api/workspaces/${workspaceId}/tabs/${tabId}/messages/search?q=${encodeURIComponent(keyword)}`;
+  return request(url, { method: "GET" });
+};

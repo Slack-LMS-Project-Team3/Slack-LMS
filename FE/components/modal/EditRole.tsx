@@ -33,7 +33,7 @@ export default function EditRole({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 역할과 그룹 정보를 전역 상태에서 가져오기
-  const { roles, loadingRoles, fetchRoles } = useRoleStore();
+  const { roles, fetchRoles } = useRoleStore();
 
   // 역할 선택 상태 관리 (초기값은 현재 역할)  
   const [selectedRoleId, setSelectedRoleId] = useState<string>(
@@ -41,8 +41,8 @@ export default function EditRole({
   );
 
   // 선택된 역할 이름 찾기
-  const selectedRole = roles.find(
-    (role) => String(role.role_id) === selectedRoleId,
+  const selectedRole = roles[workspaceId].find(
+    (role: Role) => String(role.role_id) === selectedRoleId,
   );
 
   // 모달이 열릴 때 역할 목록 불러오기
@@ -102,15 +102,12 @@ export default function EditRole({
     >
       <div className="flex flex-col gap-6 py-4 pb-0">
         <div className="flex flex-col gap-3">
-          {loadingRoles ? (
-            <div className="py-4 text-center">역할을 불러오는 중입니다...</div>
-          ) : (
-            <RadioGroup
+          <RadioGroup
               value={selectedRoleId}
               onValueChange={setSelectedRoleId}
               className="grid grid-cols-2 gap-2"
             >
-              {roles.map((role) => (
+              {roles[workspaceId].map((role: Role) => (
                 <div
                   key={role.role_id}
                   className="flex items-center space-x-2"
@@ -125,7 +122,7 @@ export default function EditRole({
                 </div>
               ))}
             </RadioGroup>
-          )}
+          )
         </div>
 
         <div className="flex justify-between gap-3 mt-4">

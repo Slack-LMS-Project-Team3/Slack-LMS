@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List
-
+from uuid import UUID
 class WorkspaceNameSchema(BaseModel):
     workspace_id: int
     workspace_name: str
@@ -23,24 +23,32 @@ class InsertWorkspaceSchema(BaseModel):
 
 
 class MemberInfo(BaseModel):
-    user_name: str
+    user_id: str
+    nickname: str
     email: str
     image: str | None
+    role_id: int
     role_name: str
+    group_id: List
+    group_name: List
 
 
 class WorkspaceMembersSchema(BaseModel):
     mem_infos: List[MemberInfo]
 
     @classmethod 
-    def from_row(cls, rows: List[tuple]) -> "WorkspaceMembersSchema":
+    def from_row(cls, rows: List[list]) -> "WorkspaceMembersSchema":
         return cls(
-            mem_infos=[
+            mem_infos = [
                 MemberInfo(
-                    user_name=row[0],
-                    email=row[1],
-                    image=row[2],
-                    role_name=row[3]
+                    user_id= UUID(bytes=row[0]).hex,
+                    nickname= row[1],
+                    email= row[2],
+                    image= row[3],
+                    role_id= row[4],
+                    role_name= row[5],
+                    group_id= row[6],
+                    group_name= row[7],
                 )
                 for row in rows
             ]

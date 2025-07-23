@@ -2,15 +2,10 @@ import { useCallback } from "react";
 import { useFileStore } from "@/store/fileStore";
 import { useMessageStore } from "@/store/messageStore";
 import { putPresignedUrl, uploadFile } from "@/apis/fileImport";
-export function useFilePreview(editor: any, fileInputRef: React.RefObject<HTMLInputElement>) {
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
+export function useFilePreview(
+  editor: any,
+  fileInputRef: React.RefObject<HTMLInputElement>,
+) {
   const handleFileSelect = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
@@ -41,19 +36,13 @@ export function useFilePreview(editor: any, fileInputRef: React.RefObject<HTMLIn
           alert("파일 크기는 5MB 이하여야 합니다.");
           return;
         }
-        // 파일을 base64로 변환
-        const base64 = await convertFileToBase64(file);
         // 에디터에 이미지 삽입
         if (file.type.startsWith("image/")) {
-          editor.chain().focus().setImage({ src: base64 }).run();
+          editor.chain().focus().setImage({ src: fileUrl }).run();
         } else {
-          const ext = file.name.split(".").pop()?.toLowerCase() || "";
-          let defaultImg = "/upload_default.png"; // 기본값
-          if (ext === "pdf") defaultImg = "/upload_default.png";
-          else if (["doc", "docx"].includes(ext)) defaultImg = "/upload_default.png";
-          else if (["xls", "xlsx"].includes(ext)) defaultImg = "/upload_default.png";
-          else if (["ppt", "pptx"].includes(ext)) defaultImg = "/upload_default.png";
-          editor.chain().focus().setImage({ src: defaultImg }).run();
+          editor?.commands.setFileDownload({
+            fileUrl: fileUrl, // 예: "https://s3.aws.com/abc.pdf"
+          });
         }
         // 파일 입력 초기화
         if (fileInputRef.current) {
@@ -63,5 +52,5 @@ export function useFilePreview(editor: any, fileInputRef: React.RefObject<HTMLIn
     },
     [editor],
   );
-  return { handleFileSelect, convertFileToBase64 };
+  return { handleFileSelect };
 }

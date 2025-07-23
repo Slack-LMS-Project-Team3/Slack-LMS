@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { CodeBlockIcon } from "../tiptap-icons/code-block-icon";
 
+
 const ToolBar = ({
   editor,
   setLink,
