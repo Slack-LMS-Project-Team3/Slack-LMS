@@ -6,6 +6,11 @@ import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation";
 import { fetchWithAuth } from '@/apis/authApi';
 import { useMyPermissionsStore } from '@/store/myPermissionsStore';
+import { DialogModal } from '@/components/modal/DialogModal';
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+
 
 // Notion API 응답을 ExtendedRecordMap 형식으로 변환하는 함수
 function convertToExtendedRecordMap(notionData: any): ExtendedRecordMap {
@@ -33,6 +38,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showImportModal, setShowImportModal] = useState<boolean>(false);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [customPageId, setCustomPageId] = useState<string>("");
   
   const inputRef = useRef<HTMLInputElement>(null);
@@ -73,22 +79,22 @@ export default function Page() {
       setError(null);
     } catch (err) {
       console.error("Canvas 불러오기 오류:", err);
-      setError(`캔버스를 불러오는 중 오류가 발생했습니다: ${err instanceof Error ? err.message : '알 수 없는 오류'}`);
+      setError(`캔버스를 불러올 수 없습니다.`);
     }
   };
 
-  const handleImportWithPageId = async (pageId: string) => {
+  // 새로운 canvas 생성 (Import 버튼)
+  const handleImportNewCanvas = async (pageId: string) => {
     setLoading(true);
+    setError(null); // 먼저 에러 상태 클리어
+    
     try {
       const apiUrl = `${BASE}/api/workspaces/${workspaceId}/tabs/${tabId}/canvases/${pageId}`;
-      console.log("Import API 요청:", apiUrl);
-      console.log("페이지 ID:", pageId);
+      console.log("Import API 요청 (POST):", apiUrl);
       
       const res = await fetchWithAuth(apiUrl, {
         method: 'POST'
       });
-      
-      console.log("Import 응답 상태:", res?.status);
       
       if (!res || !res.ok) {
         const errorText = await res?.text();
@@ -97,20 +103,49 @@ export default function Page() {
       }
       
       console.log("Import 성공");
-      
-      // Import 성공 후 모달 닫기
       setShowImportModal(false);
       setCustomPageId("");
       
-      // 백엔드 저장 완료를 위한 짧은 지연
       await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // 새로운 데이터 자동 로드
       await fetchCanvasData();
       
     } catch (err) {
       console.error("Canvas import 오류:", err);
-      setError(`캔버스를 가져오는 중 오류가 발생했습니다: ${err instanceof Error ? err.message : '알 수 없는 오류'}`);
+      setError(`캔버스를 불러올 수 없습니다.`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 기존 canvas 수정 (Edit 버튼)
+  const handleEditCanvas = async (pageId: string) => {
+    setLoading(true);
+    setError(null); // 먼저 에러 상태 클리어
+    
+    try {
+      const apiUrl = `${BASE}/api/workspaces/${workspaceId}/tabs/${tabId}/canvases/${pageId}`;
+      console.log("Edit API 요청 (PATCH):", apiUrl);
+      
+      const res = await fetchWithAuth(apiUrl, {
+        method: 'PATCH'
+      });
+      
+      if (!res || !res.ok) {
+        const errorText = await res?.text();
+        console.error("Edit 에러 응답:", errorText);
+        throw new Error(`API 응답 오류: ${res?.status} - ${errorText}`);
+      }
+      
+      console.log("Edit 성공");
+      setShowEditModal(false);
+      setCustomPageId("");
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await fetchCanvasData();
+      
+    } catch (err) {
+      console.error("Canvas edit 오류:", err);
+      setError(`캔버스를 불러올 수 없습니다.`);
     } finally {
       setLoading(false);
     }
@@ -126,13 +161,12 @@ export default function Page() {
   }, [canvasId]);
 
   useEffect(() => {
-    if (showImportModal && inputRef.current) {
-      // 짧은 지연 후 포커스 (모달 애니메이션 완료 후)
+    if ((showImportModal || showEditModal) && inputRef.current) {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     }
-  }, [showImportModal]);
+  }, [showImportModal, showEditModal]);
 
   if (loading) {
     return (
@@ -156,9 +190,76 @@ export default function Page() {
   }
   
   if (error) {
-    return <div className="flex items-center justify-center h-full">
-      <p className="text-red-500">{error}</p>
-    </div>;
+    return (
+      <div className="relative h-full w-full">
+        <div className="h-full w-full flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center space-y-6 text-center">
+            <div className="text-red-500 text-lg">캔버스를 불러올 수 없습니다</div>
+            {isAdmin ? (
+              <>
+                <div className="text-gray-400 text-sm">올바른 Page ID를 입력해주세요</div>
+                <DialogModal
+                  title={!recordMap ? "Import Notion Page" : "Switch Notion Page"}
+                  open={!recordMap ? showImportModal : showEditModal}
+                  onOpenChange={!recordMap ? setShowImportModal : setShowEditModal}
+                  // className="[&_[data-slot=dialog-overlay]]:bg-black/90"
+                  trigger={
+                    <Button className="px-6 py-3">Import</Button>
+                  }
+                >
+                  <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+                    <div className="text-red-800 text-sm font-medium mb-1">페이지를 불러올 수 없습니다</div>
+                    <div className="text-red-600 text-sm">올바른 Notion Page ID를 입력해주세요</div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="error-page-id">Page ID</Label>
+                    <Input
+                      id="error-page-id"
+                      ref={inputRef}
+                      type="text"
+                      placeholder="Enter Notion Page ID"
+                      value={customPageId}
+                      onChange={(e) => setCustomPageId(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-3 mt-2">
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        if (!recordMap) {
+                          setShowImportModal(false);
+                        } else {
+                          setShowEditModal(false);
+                        }
+                        setCustomPageId("");
+                      }}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (!recordMap) {
+                          handleImportNewCanvas(customPageId);
+                        } else {
+                          handleEditCanvas(customPageId);
+                        }
+                      }}
+                      disabled={!customPageId.trim()}
+                      className="flex-1"
+                    >
+                      {!recordMap ? "Import" : "Switch"}
+                    </Button>
+                  </div>
+                </DialogModal>
+              </>
+            ) : (
+              <div className="text-gray-400 text-sm">관리자에게 문의해주세요</div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!recordMap) {
@@ -166,83 +267,56 @@ export default function Page() {
       <div className="relative h-full w-full">
         <div className="h-full w-full flex items-center justify-center">
           <div className="flex flex-col items-center justify-center space-y-6 text-center">
-            <div className="text-gray-500 text-lg">등록된 Notion 페이지가 없습니다</div>
+            <div className="text-gray-500 text-lg">등록된 캔버스가 없습니다</div>
             {isAdmin ? (
               <>
-                <div className="text-gray-400 text-sm">Import 버튼을 클릭하여 페이지를 등록해주세요</div>
-                <button
-                  onClick={() => setShowImportModal(true)}
-                  className="px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                <div className="text-gray-400 text-sm">Import 버튼을 클릭하여 캔버스를 등록해주세요</div>
+                <DialogModal
+                  title="Import Notion Page"
+                  open={showImportModal}
+                  onOpenChange={setShowImportModal}
+                  className="[&_[data-slot=dialog-overlay]]:bg-black/90"
+                  trigger={
+                    <Button className="px-6 py-3">Import</Button>
+                  }
                 >
-                  Import
-                </button>
+                  <div className="space-y-2">
+                    <Label htmlFor="import-page-id">Page ID</Label>
+                    <Input
+                      id="import-page-id"
+                      ref={inputRef}
+                      type="text"
+                      placeholder="Enter Notion Page ID"
+                      value={customPageId}
+                      onChange={(e) => setCustomPageId(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-3 mt-2">
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setShowImportModal(false);
+                        setCustomPageId("");
+                      }}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => handleImportNewCanvas(customPageId)}
+                      disabled={!customPageId.trim()}
+                      className="flex-1"
+                    >
+                      Import
+                    </Button>
+                  </div>
+                </DialogModal>
               </>
             ) : (
               <div className="text-gray-400 text-sm">관리자가 페이지를 등록할 때까지 기다려주세요</div>
             )}
           </div>
         </div>
-        
-        {showImportModal && (
-          <div className="fixed inset-0 z-50 bg-black/70 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
-            <div className="fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-xl border bg-card p-6 text-card-foreground shadow-lg duration-200 sm:max-w-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
-              <button
-                onClick={() => {
-                  setShowImportModal(false);
-                  setCustomPageId("");
-                }}
-                className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-              >
-                <svg viewBox="0 0 24 24" className="size-4">
-                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-                <span className="sr-only">Close</span>
-              </button>
-              <div className="flex flex-col space-y-1.5 text-center sm:text-left">
-                <h2 className="text-lg font-semibold leading-none tracking-tight">
-                  Import Notion Page
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Enter the Notion page ID to import the content
-                </p>
-              </div>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <label htmlFor="pageId" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Page ID
-                  </label>
-                  <input
-                    ref={inputRef}
-                    id="pageId"
-                    type="text"
-                    value={customPageId}
-                    onChange={(e) => setCustomPageId(e.target.value)}
-                    placeholder="Enter Notion Page ID"
-                    className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-1 flex-row gap-3">
-                <button
-                  onClick={() => {
-                    setShowImportModal(false);
-                    setCustomPageId("");
-                  }}
-                  className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-xs transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 flex-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleImportWithPageId(customPageId)}
-                  disabled={!customPageId.trim()}
-                  className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 flex-1"
-                >
-                  Import
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     );
   }
@@ -251,79 +325,52 @@ export default function Page() {
     <div className="relative h-full w-full">
       {isAdmin && (
         <div className="absolute top-4 right-4 z-10">
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+          <DialogModal
+            title="Switch Notion Page"
+            open={showEditModal}
+            onOpenChange={setShowEditModal}
+            className="[&_[data-slot=dialog-overlay]]:bg-black/90"
+            trigger={
+              <Button className="px-4 py-2">Edit</Button>
+            }
           >
-            Edit
-          </button>
-        </div>
-      )}
-      
-      <div className="h-full w-full overflow-auto">
-        <NotionPage recordMap={recordMap} />
-      </div>
-      
-      {showImportModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
-          <div className="fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-xl border bg-card p-6 text-card-foreground shadow-lg duration-200 sm:max-w-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
-            <button
-              onClick={() => {
-                setShowImportModal(false);
-                setCustomPageId("");
-              }}
-              className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-            >
-              <svg viewBox="0 0 24 24" className="size-4">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" fill="none"/>
-              </svg>
-              <span className="sr-only">Close</span>
-            </button>
-            <div className="flex flex-col space-y-1.5 text-center sm:text-left">
-              <h2 className="text-lg font-semibold leading-none tracking-tight">
-                Switch Notion Page
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Enter a new Notion page ID to switch the content
-              </p>
+            <div className="space-y-2">
+              <Label htmlFor="edit-page-id">Page ID</Label>
+              <Input
+                id="edit-page-id"
+                ref={inputRef}
+                type="text"
+                placeholder="Enter Notion Page ID"
+                value={customPageId}
+                onChange={(e) => setCustomPageId(e.target.value)}
+              />
             </div>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <label htmlFor="pageId" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-60">
-                  Page ID
-                </label>
-                <input
-                  ref={inputRef}
-                  id="pageId"
-                  type="text"
-                  value={customPageId}
-                  onChange={(e) => setCustomPageId(e.target.value)}
-                  placeholder="Enter Notion Page ID"
-                  className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                />
-              </div>
-            </div>
-            <div className="flex flex-1 flex-row gap-3">
-              <button
+            <div className="flex gap-3 mt-2">
+              <Button
+                variant="secondary"
                 onClick={() => {
-                  setShowImportModal(false);
+                  setShowEditModal(false);
                   setCustomPageId("");
                 }}
-                className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-xs transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 flex-1"
+                className="flex-1"
               >
                 Cancel
-              </button>
-              <button
-                onClick={() => handleImportWithPageId(customPageId)}
+              </Button>
+              <Button
+                onClick={() => handleEditCanvas(customPageId)}
                 disabled={!customPageId.trim()}
-                className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 flex-1"
+                className="flex-1"
               >
                 Switch
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogModal>
         </div>
       )}
+      
+      <div className="h-full w-full pl-10 overflow-auto">
+        <NotionPage recordMap={recordMap} />
+      </div>
     </div>
   );
 }

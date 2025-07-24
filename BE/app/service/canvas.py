@@ -9,3 +9,6 @@ class CanvasService:
     
     def save_page_id(self, workspace_id, tab_id, page_id):
         self.repo.insert(workspace_id, tab_id, page_id)
+        
+    def update_page_id(self, workspace_id, tab_id, page_id):
+        self.repo.update(workspace_id, tab_id, page_id)

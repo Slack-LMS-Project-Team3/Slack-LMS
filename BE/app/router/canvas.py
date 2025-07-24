@@ -31,7 +31,39 @@ async def get_notion_page(workspace_id: int, tab_id: int):
 @router.post("/workspaces/{workspace_id}/tabs/{tab_id}/canvases/{page_id}")
 async def save_notion_page(workspace_id, tab_id, page_id):
     try:
+        # 먼저 Notion 페이지가 유효한지 확인
+        import httpx
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"https://notion-api.splitbee.io/v1/page/{page_id}")
+            
+            if response.status_code == 404:
+                raise HTTPException(status_code=400, detail="유효하지 않은 Notion Page ID입니다")
+            elif response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Notion 페이지를 가져올 수 없습니다")
+        
         service.save_page_id(workspace_id, tab_id, page_id)
         return {"message": "Canvas saved successfully", "page_id": page_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@router.patch("/workspaces/{workspace_id}/tabs/{tab_id}/canvases/{page_id}")
+async def update_notion_page(workspace_id, tab_id, page_id):
+    try:
+        # 먼저 Notion 페이지가 유효한지 확인
+        import httpx
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"https://notion-api.splitbee.io/v1/page/{page_id}")
+            
+            if response.status_code == 404:
+                raise HTTPException(status_code=400, detail="유효하지 않은 Notion Page ID입니다")
+            elif response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Notion 페이지를 가져올 수 없습니다")
+        
+        service.update_page_id(workspace_id, tab_id, page_id)
+        return {"message": "Canvas updated successfully", "page_id": page_id}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

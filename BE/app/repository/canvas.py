@@ -10,7 +10,15 @@ INSERT INTO canvases (
     %(workspace_id)s, 
     %(tab_id)s, 
     %(page_id)s
-);
+) ON DUPLICATE KEY UPDATE 
+    page_id = VALUES(page_id),
+    updated_at = CURRENT_TIMESTAMP;
+"""
+
+update_notion_page = """
+UPDATE canvases SET page_id = %(page_id)s
+WHERE workspace_id = %(workspace_id)s
+  AND tab_id = %(tab_id)s;
 """
 
 find_notion_page = """
@@ -24,13 +32,21 @@ class QueryRepo(AbstractQueryRepo):
         db = DBFactory.get_db("MySQL")
         super().__init__(db)
 
-    def insert(self, worksapce_id: int, tab_id: int, page_id: str):
+    def insert(self, workspace_id: int, tab_id: int, page_id: str):
         param = {
-            "workspace_id": worksapce_id,
+            "workspace_id": workspace_id,
             "tab_id": tab_id,
             "page_id": page_id
         }
         self.db.execute(save_notion_page, param)
+    
+    def update(self, workspace_id: int, tab_id: int, page_id: str):
+        param = {
+            "workspace_id": workspace_id,
+            "tab_id": tab_id,
+            "page_id": page_id
+        }
+        self.db.execute(update_notion_page, param)
 
     def find_by_id(self, workspace_id: int, tab_id: int):
         param = {
