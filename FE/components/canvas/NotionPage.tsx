@@ -83,13 +83,16 @@ export default function NotionPage({ recordMap }: NotionPageProps) {
   );
 
   return (
-    <div className="flex flex-1 justfy-start ml-10 max-h-screen">
-      <div className=" flex flex-1 min-h-0 w-full overflow-y-auto scrollbar-thin">
+    <div className="flex flex-1 justify-center w-full h-full">
+      <div className="flex flex-1 min-h-0 w-full max-w-none overflow-y-auto scrollbar-thin">
         <NotionRenderer
           recordMap={recordMap}
           fullPage
           darkMode={false}
           previewImages
+          showCollectionViewDropdown={false}
+          showTableOfContents={false}
+          mapPageUrl={() => '#'}
           components={{
             Code,
             Collection,
@@ -97,6 +100,8 @@ export default function NotionPage({ recordMap }: NotionPageProps) {
             Modal,
             nextImage: Image,
             nextLink: Link,
+            Header: () => null,
+            Breadcrumbs: () => null,
           }}
         />
       </div>
