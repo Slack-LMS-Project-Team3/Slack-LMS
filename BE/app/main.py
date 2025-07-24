@@ -28,7 +28,7 @@ from app.router import role
 from app.router import group
 from app.router import links
 from app.router import sse  # SSE
-from app.router import notion
+from app.router import canvas
 from app.router import save_message
 
 
@@ -59,7 +59,7 @@ app.include_router(router=direct_message.router, prefix="/api")
 app.include_router(router=db.router, prefix="/api")
 app.include_router(router=role.router, prefix="/api")
 app.include_router(router=sse.router, prefix="/api")
-app.include_router(router=notion.router, prefix="/api")
+app.include_router(router=canvas.router, prefix="/api")
 app.include_router(router=save_message.router, prefix="/api")
 
 
