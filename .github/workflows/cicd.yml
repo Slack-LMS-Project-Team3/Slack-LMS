@@ -12,8 +12,8 @@ env:
   AWS_REGION: "ap-northeast-2"
   BE_ECR_REPOSITORY: "slam-server"
   FE_ECR_REPOSITORY: "slam-server-front"
-  NEXT_PUBLIC_BASE: "https://jungle-lms.site"
-  NEXT_PUBLIC_WS: "wss://jungle-lms.site"
+  NEXT_PUBLIC_BASE: "https://polaryx.net"
+  NEXT_PUBLIC_WS: "wss://polaryx.net"
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: "BNreSJUzEIIAWG-qnlzRvYepD_svGLY6PJtNO4F6O8Vu9Ev_bMZK5albJ2OJCBOkn2-9bJcTIpx_4Z02YSEarwU"
 
 jobs:
@@ -82,29 +82,59 @@ jobs:
           docker push $ECR_REGISTRY/$BE_ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$BE_ECR_REPOSITORY:latest
 
-      - name: Copy docker-compose.yml to EC2
+      - name: Copy frontend docker-compose to Frontend Server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_FRONTEND_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.T3_EC2_SSH_KEY }}
           source: |
-            docker-compose.yml
+            docker-compose.frontend.yml
           target: /home/ec2-user
 
-      - name: Deploy to EC2
+      - name: Deploy to Backend Server 1 via SSM
+        uses: peterkimzz/aws-ssm-send-command@master
+        id: ssm1
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          instance-ids: ${{ secrets.EC2_BACKEND_1_ID }}
+          working-directory: /root
+          command: |
+            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+            docker compose -f docker-compose.yml pull
+            docker compose -f docker-compose.yml down
+            docker compose -f docker-compose.yml up -d
+            docker image prune -a -f
+        
+      - name: Deploy to Backend Server 2 via SSM
+        uses: peterkimzz/aws-ssm-send-command@master
+        id: ssm2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          instance-ids: ${{ secrets.EC2_BACKEND_2_ID }}
+          working-directory: /root
+          command: |
+            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+            docker compose -f docker-compose.yml pull
+            docker compose -f docker-compose.yml down
+            docker compose -f docker-compose.yml up -d
+            docker image prune -a -f
+          
+      - name: Deploy to Frontend Server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_FRONTEND_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.T3_EC2_SSH_KEY }}
           script: |
-            printf '%s\n' "${{ secrets.PROD_ENV_FILE_2 }}" | base64 -d > /home/ec2-user/.env
-
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
             cd /home/ec2-user
 
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
+            docker compose -f docker-compose.frontend.yml pull
+            docker compose -f docker-compose.frontend.yml down
+            docker compose -f docker-compose.frontend.yml up -d
             docker image prune -a -f
